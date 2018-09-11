@@ -1,0 +1,37 @@
+{
+  "name": "simsapa",
+  "version": "0.1.0",
+  "description": "Simsapa Dhamma Reader",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "build"
+  },
+  "build": {
+    "appId": "io.github.simsapa",
+    "linux": {
+      "target": [
+        "snap"
+      ]
+    }
+  },
+  "repository": "https://github.com/simsapa/simsapa",
+  "keywords": [
+    "pali",
+    "dhamma",
+    "suttas"
+  ],
+  "author": "gambhiro",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "~1.7.8",
+    "electron-builder": "^19.45.4"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "sequelize": "^4.38.0",
+    "sequelize-cli": "^4.1.1",
+    "sqlite3": "^4.0.2"
+  }
+}

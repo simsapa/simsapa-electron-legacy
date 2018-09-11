@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Simsapa Dhamma Reader
+Icon=${SNAP}/meta/gui/icon.png
+Categories=Office;Dictionary;Education;
+Exec=simsapa
+Terminal=false

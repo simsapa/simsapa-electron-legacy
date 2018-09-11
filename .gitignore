@@ -1,0 +1,19 @@
+*.swp
+.#*
+TAGS
+.DS_Store
+*.log
+**/auto/
+
+# local database
+development.sqlite3
+production.sqlite3
+
+# elm
+elm/repl-temp-*
+elm/elm-stuff/
+elm/node_modules/
+
+# electron
+app/node_modules/
+app/dist/
