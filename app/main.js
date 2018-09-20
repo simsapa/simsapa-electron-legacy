@@ -12,10 +12,13 @@ const bodyParser = require('body-parser');
 
 const express_app = express();
 
-/*
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize("database", "", "", {
+const sequelize = new Sequelize({
     dialect: "sqlite",
+
+    define: {
+        timestamps: false // true by default
+    },
 
     //operatorsAliases: false,
 
@@ -28,7 +31,9 @@ const sequelize = new Sequelize("database", "", "", {
 
     storage: path.join(__dirname, "development.sqlite3")
 });
-*/
+
+const db = require('./models');
+const Op = Sequelize.Op;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -42,30 +47,214 @@ function createWindow () {
     express_app.use(express.static(path.join(__dirname, 'static')));
 
     express_app.get("/authors/:uid", (req, res) => {
-        const uid = req.params.uid;
-        // TODO
+        const author_uid = req.params.uid;
+
+        return sequelize.query("SELECT * FROM authors WHERE uid = :uid;", {
+            replacements: {
+                uid: author_uid
+            },
+            type: sequelize.QueryTypes.SELECT,
+            model: db.Author
+        })
+            .then((data) => res.send(data))
+
+            .catch((err) => {
+                console.log("There was an error querying authors", JSON.stringify(err))
+                return res.send(err)
+            });
     });
 
-    express_app.get("/search/dict_words/:query", (req, res) => {
-        const query = req.params.query;
-        // TODO
+    express_app.get("/search/dict_words", (req, res) => {
+        const query = req.query.query;
+
+        let results = [];
+
+        Sequelize.Promise.resolve(1)
+
+        // word starts with
+
+            .then(() => {
+                const items_sql = `
+SELECT * FROM dict_words
+WHERE word LIKE :query;`;
+
+                return sequelize.query(items_sql, {
+                    replacements: {
+                        query: query + "%"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.DictWord
+                })
+
+                    .then((data) => results.push.apply(results, data))
+
+                    .catch((err) => {
+                        console.log("There was an error querying dict_words", JSON.stringify(err))
+                        return res.send(err)
+                    });
+            })
+
+        // fulltext search
+
+            .then(() => {
+                const items_sql = `
+SELECT dict_words.*
+FROM fts_dict_words
+INNER JOIN dict_words ON dict_words.id = fts_dict_words.rowid
+WHERE fts_dict_words MATCH :query
+ORDER BY rank
+LIMIT 20;`;
+
+                return sequelize.query(items_sql, {
+                    replacements: {
+                        query: query + "*"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.DictWord
+                })
+
+                    .then((data) => {
+                        results.push.apply(results, data);
+
+                        return res.send(results);
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying fts_dict_words", JSON.stringify(err))
+                        return res.send(err)
+                    });
+            });
     });
 
-    express_app.get("/search/texts/:query", (req, res) => {
-        const query = req.params.query;
-        // TODO
+    express_app.get("/search/texts", (req, res) => {
+        const query = req.query.query;
+
+        let results = {
+            root_texts: [],
+            translated_texts: []
+        };
+
+        Sequelize.Promise.resolve(1)
+
+        // root_texts.acronym starts with
+        // root_text.title contains
+
+            .then(() => {
+                const items_sql = `
+SELECT root_texts.*
+FROM root_texts
+WHERE acronym LIKE :q_acronym OR title LIKE :q_title
+ORDER BY acronym ASC
+LIMIT 20;`;
+                sequelize.query(items_sql, {
+                    replacements: {
+                        q_acronym: query + "%",
+                        q_title: "%" + query + "%"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.RootText
+                })
+
+                    .then((data) => results.root_texts.push.apply(results.root_texts, data))
+
+                    .catch((err) => {
+                        console.log("There was an error querying root_texts", JSON.stringify(err))
+                        return res.send(err)
+                    })
+            })
+
+        // fts_root_texts.content_plain contains
+
+            .then(() => {
+                const items_sql = `
+SELECT root_texts.*
+FROM fts_root_texts
+INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
+WHERE fts_root_texts MATCH :search_content
+ORDER BY rank
+LIMIT 20;`;
+
+                return sequelize.query(items_sql, {
+                    replacements: {
+                        search_content: query + "*"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.RootText
+                })
+
+                    .then((data) => results.root_texts.push.apply(results.root_texts, data))
+
+                    .catch((err) => {
+                        console.log("There was an error querying fts_root_texts", JSON.stringify(err))
+                        return res.send(err)
+                    });
+            })
+
+        // translated_texts.acronym
+        // translated_text.translated_title
+
+            .then(() => {
+                const items_sql = `
+SELECT translated_texts.*
+FROM translated_texts
+WHERE acronym LIKE :q_acronym OR translated_title LIKE :q_title
+ORDER BY acronym ASC
+LIMIT 20;`;
+
+                return sequelize.query(items_sql, {
+                    replacements: {
+                        q_acronym: query + "%",
+                        q_title: "%" + query + "%"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.TranslatedText
+                })
+
+                    .then((data) => results.translated_texts.push.apply(results.translated_texts, data))
+
+                    .catch((err) => {
+                        console.log("There was an error querying translated_texts", JSON.stringify(err))
+                        return res.send(err)
+                    });
+            })
+
+        // fts_translated_texts.content_plain
+
+        // return results
+
+            .then(() => {
+                const items_sql = `
+SELECT translated_texts.*
+FROM fts_translated_texts
+INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
+WHERE fts_translated_texts MATCH :search_content
+ORDER BY rank
+LIMIT 20;`;
+
+                return sequelize.query(items_sql, {
+                    replacements: {
+                        search_content: query + "*"
+                    },
+                    type: sequelize.QueryTypes.SELECT,
+                    model: db.TranslatedText
+                })
+
+                    .then((data) => {
+                        results.translated_texts.push.apply(results.translated_texts, data);
+
+                        return res.send(results);
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying fts_translated_texts", JSON.stringify(err))
+                        return res.send(err)
+                    });
+            });
     });
 
     express_app.listen(3030, () => {
         console.log('Server is up on port 3030');
     });
-
-    // and load the index.html of the app.
-    //mainWindow.loadURL(url.format({
-    //    pathname: path.join(__dirname, 'index.html'),
-    //    protocol: 'file:',
-    //    slashes: true
-    //}));
 
     mainWindow.loadURL(url.format({
         protocol: "http",
