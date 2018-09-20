@@ -8,6 +8,7 @@ TAGS
 # local database
 development.sqlite3
 production.sqlite3
+CHECKSUMS.md5
 
 # elm
 elm/repl-temp-*
@@ -15,5 +16,6 @@ elm/elm-stuff/
 elm/node_modules/
 
 # electron
-app/node_modules/
-app/dist/
+node_modules/
+dist/
+out/
