@@ -1,24 +1,42 @@
-version: "{build}"                  # Version used in Appveyor to know this is a unique run, branch/build are only two vars
-build: off                          # Disables typical windows building for Visual Studio
-platform:                           # Platforms to test/build on
-#  - x86                            # Build for 32bit
-  - x64                             # Also build and test 64bit
+version: "0.1.0.{build}"
+
+skip_non_tags: true
+
+image: Visual Studio 2017
+
+shallow_clone: true
+
+platform:
+#  - x86
+  - x64
+
 environment:
-  nodejs_version: "10"              # Test against the latest version of this Node.js version
-install:                            # Install scripts. (runs after repo cloning)
-  - ps: Install-Product node $env:nodejs_version # Get the latest stable version of Node.js or io.js
-  - npm install                     # install modules
-  - npm install -g electron-forge@5.2.2 # install electron-forge cli
+  nodejs_version: "10"
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - yarn
+  - npm install -g electron-forge@5.2.2
+
 cache:
-  - node_modules                    # Cache npm install to save a minute on builds
-skip_non_tags: true                 # Only build tags (we use travis-ci for tests)
-test_script:
-  - node --version                  # Helpful debugging info
+  - node_modules
+  - '%USERPROFILE%\.electron'
+
+before_build:
+  - node --version
   - npm --version
-  - npm test                        # run tests
-after_test:                         # run build after tests
-  - npm run make                    # Script to package/compile
-artifacts:                          # Add artifacts to upload
-  - path: 'out\make\**\*.exe'       # upload all exe files in ./out/make
-    name: exe                       # name to be used in deploy
+
+build_script:
+  - echo "Skipping build step."
+
+test_script:
+  - echo "Skipping test step."
+
+after_test:
+  - npm run fetch-assets
+  - npm run make
+
+artifacts:
+  - path: 'out\make\**\*.exe'
+    name: exe
 

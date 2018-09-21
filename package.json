@@ -7,7 +7,7 @@
     "scripts": {
         "start": "electron-forge start",
         "package": "electron-forge package",
-        "make": "npm run fetch-assets && electron-forge make",
+        "make": "electron-forge make",
         "publish": "electron-forge publish",
         "lint": "eslint src --color",
         "fetch-assets": "./node_modules/.bin/nwget http://ssp.a-buddha-ujja.org/v0.1.0/development.sqlite3 -O ./src/development.sqlite3 > nwget.log",
