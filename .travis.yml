@@ -17,6 +17,7 @@ cache:
   directories:
     - node_modules
     - "$HOME/.npm"
+    - "$HOME/.cache/yarn/v1"
     - "$HOME/.electron"
 
 before_install:

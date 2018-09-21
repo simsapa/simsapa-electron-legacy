@@ -45,6 +45,7 @@ const createWindow = () => {
     mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
+        icon: path.join(__dirname, "static", "assets", "icons", "simsapa-logo-text-w256.png")
     });
 
     express_app.use(bodyParser.json());
@@ -268,7 +269,7 @@ LIMIT 20;`;
         slashes: true
     }));
 
-    //mainWindow.setMenuBarVisibility(false);
+    mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
     //mainWindow.webContents.openDevTools();

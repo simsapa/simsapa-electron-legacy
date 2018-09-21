@@ -12,6 +12,7 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode exposing (Decoder, int, list, string)
 import Json.Decode.Pipeline exposing (required)
+import Markdown
 import Markdown.Config as MDConf
 import RemoteData exposing (WebData)
 import Url.Builder as UB exposing (absolute)
@@ -64,17 +65,10 @@ view lift topNav model =
 readingHero lift model =
     let
         contentHeading =
-            [ header
-                []
-                [ p [ class "suttaref" ] [ text "SN 56.11" ]
-                , h1 [] [ text "Dhammacakkappavattana Sutta" ]
-                , h2 [] [ text "Setting the Wheel of Dhamma in Motion" ]
-                , h3 [] [ text "translated by Thanissaro Bhikkhu" ]
-                ]
-            ]
+            [ viewSelectedTextHeader lift model ]
 
         contentBody =
-            [ viewSelectedText lift model ]
+            [ viewSelectedTextBody lift model ]
 
         contentWrapper =
             if model.isReadingExpanded then
@@ -120,16 +114,16 @@ textListTab t lift model =
             tab isCurrentReading
                 [ onClick (lift (SetSelectedReadText t)) ]
                 []
-                [ span [] [ text t_.acronym ]
-                , span [] [ text t_.title ]
+                [ span [ class "tab-acronym" ] [ text t_.acronym ]
+                , span [ class "tab-title" ] [ text t_.title ]
                 ]
 
         SelectedTranslatedText t_ ->
             tab isCurrentReading
                 [ onClick (lift (SetSelectedReadText t)) ]
                 []
-                [ span [] [ text t_.acronym ]
-                , span [] [ text t_.translated_title ]
+                [ span [ class "tab-acronym" ] [ text t_.acronym ]
+                , span [ class "tab-title" ] [ text t_.translated_title ]
                 ]
 
 
@@ -237,19 +231,57 @@ viewTranslatedTextRow lift translated_text model =
         ]
 
 
-viewSelectedText : (Msg m -> m) -> Model -> Html m
-viewSelectedText lift model =
-    div []
-        [ p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , h2 [] [ text "Turning the Wheel" ]
-        , p [] [ em [] [ text "Lorem ipsum ..." ] ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
-        , p [] [ text "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl." ]
+viewSelectedRootTextHeader : RootText -> Html m
+viewSelectedRootTextHeader t =
+    header
+        []
+        [ p [ class "suttaref" ] [ text t.acronym ]
+        , h1 [] [ text t.title ]
+        , h3 [] [ text ("translated by " ++ t.author_uid) ]
         ]
+
+
+viewSelectedTranslatedTextHeader : TranslatedText -> Html m
+viewSelectedTranslatedTextHeader t =
+    header
+        []
+        [ p [ class "suttaref" ] [ text t.acronym ]
+        , h1 [] [ text t.root_title ]
+        , h2 [] [ text t.translated_title ]
+        , h3 [] [ text ("translated by " ++ t.author_uid) ]
+        ]
+
+
+viewSelectedTextHeader : (Msg m -> m) -> Model -> Html m
+viewSelectedTextHeader lift model =
+    case model.selectedText of
+        Nothing ->
+            div [] []
+
+        Just t ->
+            case t of
+                SelectedTranslatedText t_ ->
+                    viewSelectedTranslatedTextHeader t_
+
+                SelectedRootText t_ ->
+                    viewSelectedRootTextHeader t_
+
+
+viewSelectedTextBody : (Msg m -> m) -> Model -> Html m
+viewSelectedTextBody lift model =
+    case model.selectedText of
+        Nothing ->
+            div [] [ text "No selected text." ]
+
+        Just t ->
+            case t of
+                SelectedTranslatedText t_ ->
+                    div [] <|
+                        Markdown.toHtml mdRawHtml t_.content_html
+
+                SelectedRootText t_ ->
+                    div [] <|
+                        Markdown.toHtml mdRawHtml t_.content_html
 
 
 searchInput : (Msg m -> m) -> Model -> Html m
@@ -268,7 +300,7 @@ searchInput lift model =
 
         myInputAttrs : List (Attribute m)
         myInputAttrs =
-            [ placeholder "Search in texts, e.g.: middle way, majjhima patipada, SN 56.11, ..."
+            [ placeholder "Search in texts, e.g.: middle way, majjhima patipada, DN 16 ..."
             , autofocus True
             , onInput (\x -> lift (SetTextLookupQuery x))
             ]
@@ -303,9 +335,24 @@ type alias Model =
 initialModel =
     { lookupQuery = ""
     , lookupResults = RemoteData.NotAsked
-    , selectedText = Nothing
-    , selectedTextList = []
+    , selectedText = Just (SelectedTranslatedText initialTranslatedText)
+    , selectedTextList = [ SelectedTranslatedText initialTranslatedText ]
     , isReadingExpanded = False
+    }
+
+
+initialTranslatedText : TranslatedText
+initialTranslatedText =
+    { id = 999888
+    , uid = "sn56.11-initial/thanissaro"
+    , author_uid = "thanissaro"
+    , acronym = "SN 56.11"
+    , volpage = "PTS"
+    , root_title = "Dhammacakkappavattana Sutta"
+    , translated_title = "Setting the Wheel of Dhamma in Motion"
+    , content_language = "en"
+    , content_plain = "Lorem ipsum"
+    , content_html = "<p>Lorem ipsum</p><p><em>Lorem ispum</em></p>"
     }
 
 

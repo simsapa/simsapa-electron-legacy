@@ -41,7 +41,9 @@
                 ]
             },
             "electronPackagerConfig": {
-                "packageManager": "yarn"
+                "packageManager": "yarn",
+                "icon": "./src/static/assets/icons/simsapa-logo-text-w256",
+                "ignore": [ "sass", "elm" ]
             },
             "electronWinstallerConfig": {
                 "name": "simsapa"
