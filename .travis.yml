@@ -6,13 +6,21 @@ os:
   - linux
   - osx
 
+branches:
+  only:
+    - master
+
+git:
+  depth: 1
+
 cache:
   directories:
     - node_modules
+    - "$HOME/.npm"
     - "$HOME/.electron"
 
-stages:
-  - build
+before_install:
+  - echo "Skipping before_install."
 
 install:
   - npm install -g npm@6.4.1
@@ -22,10 +30,15 @@ install:
 before_script:
   - node --version
   - npm --version
+  - yarn cache dir
 
-jobs:
-  - stage: build
-    script:
-      - npm run fetch-assets
-      - npm run make
+script:
+  - npm run fetch-assets
+  - npm run make
+
+after_success:
+  - echo "Hello after_success."
+
+after_script:
+  - echo "Hello after_script."
 
