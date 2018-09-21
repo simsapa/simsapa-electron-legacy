@@ -14,8 +14,8 @@ echo "Cli tools available."
 
 cd elm
 
-ELM_JS="../app/static/elm.js"
-#MIN_JS="../app/static/elm.min.js"
+ELM_JS="../src/static/elm.js"
+#MIN_JS="../src/static/elm.min.js"
 MIN_JS=$ELM_JS
 
 elm make src/Main.elm --output $ELM_JS --optimize
