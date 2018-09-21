@@ -1,0 +1,31 @@
+language: node_js
+
+node_js: "10"
+
+os:
+  - linux
+  - osx
+
+cache:
+  directories:
+    - node_modules
+    - "$HOME/.electron"
+
+stages:
+  - build
+
+install:
+  - npm install -g npm@6.4.1
+  - npm install -g electron-forge@5.2.2
+  - yarn
+
+before_script:
+  - node --version
+  - npm --version
+
+jobs:
+  - stage: build
+    script:
+      - npm run fetch-assets
+      - npm run make
+

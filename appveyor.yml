@@ -20,6 +20,8 @@ install:
 
 cache:
   - node_modules
+  - '%APPDATA%\npm-cache'
+  - '%LOCALAPPDATA%\Yarn\cache'
   - '%USERPROFILE%\.electron'
 
 before_build:
