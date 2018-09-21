@@ -269,7 +269,7 @@ LIMIT 20;`;
         slashes: true
     }));
 
-    //mainWindow.setMenuBarVisibility(false);
+    mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
     //mainWindow.webContents.openDevTools();

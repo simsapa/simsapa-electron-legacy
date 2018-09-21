@@ -55,7 +55,7 @@ initialModel =
     { route = Route.SearchTexts
     , topNav = { activeLink = Just Route.SearchTexts }
     , searchTexts = View.SearchTexts.initialModel
-    , searchDictionary = {}
+    , searchDictionary = View.SearchDictionary.initialModel
     }
 
 
@@ -131,6 +131,5 @@ viewBody model =
             View.SearchTexts.view SearchTextsMsg topNav model.searchTexts
 
         Route.SearchDictionary ->
-            [ topNav
-            , View.SearchDictionary.view SearchDictionaryMsg model.searchDictionary
-            ]
+            View.SearchDictionary.view SearchDictionaryMsg topNav model.searchDictionary
+
