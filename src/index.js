@@ -41,8 +41,8 @@ const db = require('./models');
 const Op = Sequelize.Op;
 
 const createWindow = () => {
-    // Create the browser window.
 
+    // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
