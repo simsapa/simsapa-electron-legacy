@@ -11,9 +11,9 @@ production.sqlite3
 CHECKSUMS.md5
 
 # elm
-elm/repl-temp-*
-elm/elm-stuff/
-elm/node_modules/
+gui-src/elm/repl-temp-*
+gui-src/elm/elm-stuff/
+gui-src/elm/node_modules/
 
 # electron
 node_modules/

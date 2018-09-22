@@ -43,15 +43,10 @@ const Op = Sequelize.Op;
 const createWindow = () => {
     // Create the browser window.
 
-    //mainWindow = new BrowserWindow({
-    //    width: 1920,
-    //    height: 1080,
-    //    icon: path.join(__dirname, "static", "assets", "icons", "simsapa-logo-text-w256.png")
-    //});
-
     mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
+        icon: path.join(__dirname, "static", "assets", "icons", "logo-letter-w64.png")
     });
 
     express_app.use(bodyParser.json());
@@ -70,8 +65,8 @@ const createWindow = () => {
             .then((data) => res.send(data))
 
             .catch((err) => {
-                console.log("There was an error querying authors", JSON.stringify(err))
-                return res.send(err)
+                console.log("There was an error querying authors", JSON.stringify(err));
+                return res.send(err);
             });
     });
 
@@ -100,8 +95,8 @@ WHERE word LIKE :query;`;
                     .then((data) => results.push.apply(results, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying dict_words", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying dict_words", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
@@ -131,8 +126,8 @@ LIMIT 20;`;
                     })
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_dict_words", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_dict_words", JSON.stringify(err));
+                        return res.send(err);
                     });
             });
     });
@@ -169,9 +164,9 @@ LIMIT 20;`;
                     .then((data) => results.root_texts.push.apply(results.root_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying root_texts", JSON.stringify(err))
-                        return res.send(err)
-                    })
+                        console.log("There was an error querying root_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
             })
 
         // fts_root_texts.content_plain contains
@@ -196,8 +191,8 @@ LIMIT 20;`;
                     .then((data) => results.root_texts.push.apply(results.root_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_root_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_root_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
@@ -224,8 +219,8 @@ LIMIT 20;`;
                     .then((data) => results.translated_texts.push.apply(results.translated_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying translated_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying translated_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
@@ -257,8 +252,8 @@ LIMIT 20;`;
                     })
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_translated_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_translated_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             });
     });
