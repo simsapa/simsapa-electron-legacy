@@ -197,13 +197,13 @@ LIMIT 20;`;
             })
 
         // translated_texts.acronym
-        // translated_text.translated_title
+        // translated_text.title
 
             .then(() => {
                 const items_sql = `
 SELECT translated_texts.*
 FROM translated_texts
-WHERE acronym LIKE :q_acronym OR translated_title LIKE :q_title
+WHERE acronym LIKE :q_acronym OR title LIKE :q_title
 ORDER BY acronym ASC
 LIMIT 20;`;
 

@@ -123,7 +123,7 @@ textListTab t lift model =
                 [ onClick (lift (SetSelectedReadText t)) ]
                 []
                 [ span [ class "tab-acronym" ] [ text t_.acronym ]
-                , span [ class "tab-title" ] [ text t_.translated_title ]
+                , span [ class "tab-title" ] [ text t_.title ]
                 ]
 
 
@@ -221,7 +221,7 @@ viewTranslatedTextRow lift translated_text model =
             [ text translated_text.acronym ]
         , Html.div
             [ style "font-weight" "bold" ]
-            [ text translated_text.translated_title ]
+            [ text translated_text.title ]
         , Html.div
             [ style "font-style" "italic" ]
             [ text translated_text.author_uid ]
@@ -247,7 +247,7 @@ viewSelectedTranslatedTextHeader t =
         []
         [ p [ class "suttaref" ] [ text t.acronym ]
         , h1 [] [ text t.root_title ]
-        , h2 [] [ text t.translated_title ]
+        , h2 [] [ text t.title ]
         , h3 [] [ text ("translated by " ++ t.author_uid) ]
         ]
 
@@ -348,8 +348,8 @@ initialTranslatedText =
     , author_uid = "thanissaro"
     , acronym = "SN 56.11"
     , volpage = "PTS"
+    , title = "Setting the Wheel of Dhamma in Motion"
     , root_title = "Dhammacakkappavattana Sutta"
-    , translated_title = "Setting the Wheel of Dhamma in Motion"
     , content_language = "en"
     , content_plain = "Lorem ipsum"
     , content_html = "<p>Lorem ipsum</p><p><em>Lorem ispum</em></p>"
@@ -384,8 +384,8 @@ type alias TranslatedText =
     , author_uid : String
     , acronym : String
     , volpage : String
+    , title : String
     , root_title : String
-    , translated_title : String
     , content_language : String
     , content_plain : String
     , content_html : String
@@ -489,8 +489,8 @@ translatedTextDecoder =
         |> required "author_uid" string
         |> required "acronym" string
         |> required "volpage" string
+        |> required "title" string
         |> required "root_title" string
-        |> required "translated_title" string
         |> required "content_language" string
         |> required "content_plain" string
         |> required "content_html" string

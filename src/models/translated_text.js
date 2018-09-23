@@ -7,8 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       author_uid:       DataTypes.STRING,
       acronym:          DataTypes.STRING,
       volpage:          DataTypes.STRING,
+      title:            DataTypes.STRING,
       root_title:       DataTypes.STRING,
-      translated_title: DataTypes.STRING,
       content_language: DataTypes.STRING,
       content_plain:    DataTypes.STRING,
       content_html:     DataTypes.STRING
