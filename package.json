@@ -46,7 +46,10 @@
                 "ignore": [ "gui-src" ]
             },
             "electronWinstallerConfig": {
-                "name": "simsapa"
+                "name": "Simsapa.SimsapaDhammaReader",
+                "authors": "Siṃsapā Dhamma Reader",
+                "iconUrl": "./src/static/assets/icons/logo-letter-w1024.ico",
+                "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
             },
             "electronInstallerDebian": {},
             "electronInstallerRedhat": {},

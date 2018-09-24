@@ -122,8 +122,14 @@ viewLookupResults lift model =
 viewLookupResultRow : DictWord -> (Msg m -> m) -> Model -> Html m
 viewLookupResultRow dictWord lift model =
     let
+        s =
+            if String.length dictWord.summary > 0 then
+                dictWord.summary
+            else
+                dictWord.definition
+
         words =
-            String.words dictWord.summary
+            String.words s
 
         summary =
             if List.length words > 10 then

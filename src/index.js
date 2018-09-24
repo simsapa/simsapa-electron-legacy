@@ -329,9 +329,10 @@ app.on('activate', () => {
 // https://stackoverflow.com/questions/28971633/how-to-escape-string-for-sqlite-fts-query
 // https://stackoverflow.com/questions/28860704/automatic-or-queries-using-sqlite-fts4
 
+// Don't escape double quotes -- we'll warn the user that they have to be in pairs.
+
 function escape_string_for_fts(query) {
     return query
         .replace(/'/g, "''")
-        .replace(/"/g, '""')
         .replace(/[^A-Za-z0-9" ]/gi, '"$&"');
 }
