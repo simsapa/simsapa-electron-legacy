@@ -154,7 +154,7 @@ viewLookupResults lift model =
             div [] [ text "loading" ]
 
         RemoteData.Failure _ ->
-            div [] [ text "O NOES" ]
+            div [] [ text "Error: query failure" ]
 
         RemoteData.Success res ->
             viewQueryData lift res model
@@ -193,8 +193,8 @@ viewRootTextRow lift root_text model =
             [ style "font-weight" "bold" ]
             [ text root_text.title ]
         , Html.div
-            [ style "padding-left" "1em" ]
-            [ text snippet ]
+            [ style "padding-left" "1em" ] <|
+                Markdown.toHtml Nothing snippet
         ]
 
 
@@ -226,8 +226,8 @@ viewTranslatedTextRow lift translated_text model =
             [ style "font-style" "italic" ]
             [ text translated_text.author_uid ]
         , Html.div
-            [ style "padding-left" "1em" ]
-            [ text snippet ]
+            [ style "padding-left" "1em" ] <|
+                Markdown.toHtml Nothing snippet
         ]
 
 

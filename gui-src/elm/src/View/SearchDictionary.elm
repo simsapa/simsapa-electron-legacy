@@ -113,7 +113,7 @@ viewLookupResults lift model =
             div [] [ text "loading" ]
 
         RemoteData.Failure _ ->
-            div [] [ text "O NOES" ]
+            div [] [ text "Error: query failure" ]
 
         RemoteData.Success res ->
             div [] (List.map (\x -> viewLookupResultRow x lift model) res)

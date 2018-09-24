@@ -173,7 +173,16 @@ LIMIT 20;`;
 
             .then(() => {
                 const items_sql = `
-SELECT root_texts.*
+SELECT
+    root_texts.id,
+    root_texts.uid,
+    root_texts.author_uid,
+    root_texts.acronym,
+    root_texts.volpage,
+    root_texts.title,
+    root_texts.content_language,
+    snippet(fts_root_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    root_texts.content_html
 FROM fts_root_texts
 INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
 WHERE fts_root_texts MATCH :search_content
@@ -230,7 +239,17 @@ LIMIT 20;`;
 
             .then(() => {
                 const items_sql = `
-SELECT translated_texts.*
+SELECT
+    translated_texts.id,
+    translated_texts.uid,
+    translated_texts.author_uid,
+    translated_texts.acronym,
+    translated_texts.volpage,
+    translated_texts.title,
+    translated_texts.root_title,
+    translated_texts.content_language,
+    snippet(fts_translated_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    translated_texts.content_html
 FROM fts_translated_texts
 INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
 WHERE fts_translated_texts MATCH :search_content
