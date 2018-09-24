@@ -6688,7 +6688,7 @@ a.navbar-item:hover, a.navbar-item.is-active,
 }
 
 .navbar-item img {
-  max-height: 70px;
+  max-height: 48px;
 }
 
 .navbar-item.has-dropdown {

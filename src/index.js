@@ -113,7 +113,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        query: query + "*"
+                        query: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.DictWord
@@ -182,7 +182,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        search_content: query + "*"
+                        search_content: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.RootText
@@ -239,7 +239,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        search_content: query + "*"
+                        search_content: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.TranslatedText
@@ -270,10 +270,7 @@ LIMIT 20;`;
         slashes: true
     }));
 
-    mainWindow.setMenuBarVisibility(false);
-
-    // Open the DevTools.
-    //mainWindow.webContents.openDevTools();
+    mainWindow.setMenuBarVisibility(true);
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
@@ -308,3 +305,14 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+// https://www.sqlite.org/fts5.html#full_text_query_syntax
+// https://stackoverflow.com/questions/28971633/how-to-escape-string-for-sqlite-fts-query
+// https://stackoverflow.com/questions/28860704/automatic-or-queries-using-sqlite-fts4
+
+function escape_string_for_fts(query) {
+    return query
+        .replace(/'/g, "''")
+        .replace(/"/g, '""')
+        .replace(/[^A-Za-z0-9"]/gi, '"$&"');
+}
