@@ -314,5 +314,5 @@ function escape_string_for_fts(query) {
     return query
         .replace(/'/g, "''")
         .replace(/"/g, '""')
-        .replace(/[^A-Za-z0-9"]/gi, '"$&"');
+        .replace(/[^A-Za-z0-9" ]/gi, '"$&"');
 }
