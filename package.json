@@ -1,6 +1,6 @@
 {
     "name": "simsapa",
-    "productName": "Siṃsapā Dhamma Reader",
+    "productName": "simsapa",
     "version": "0.1.0",
     "description": "Read the suttas and other Dhamma texts. Includes Pali - English dictionaries.",
     "main": "src/index.js",
