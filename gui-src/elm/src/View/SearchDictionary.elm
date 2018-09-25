@@ -118,6 +118,8 @@ viewLookupResults lift model =
         RemoteData.Success res ->
             div [] (List.map (\x -> viewLookupResultRow x lift model) res)
 
+-- TODO: for word matches, show the summary
+-- TODO: for fulltext matches, show the definition_plain snippet
 
 viewLookupResultRow : DictWord -> (Msg m -> m) -> Model -> Html m
 viewLookupResultRow dictWord lift model =
@@ -126,12 +128,12 @@ viewLookupResultRow dictWord lift model =
             if String.length dictWord.summary > 0 then
                 dictWord.summary
             else
-                dictWord.definition
+                dictWord.definition_plain
 
         words =
             String.words s
 
-        summary =
+        snippet =
             if List.length words > 10 then
                 String.join " " (List.take 10 words) ++ "..."
 
@@ -152,8 +154,8 @@ viewLookupResultRow dictWord lift model =
         , column cM
             []
             [ div
-                [ style "padding-left" "1em" ]
-                [ text summary ]
+                [ style "padding-left" "1em" ] <|
+                    Markdown.toHtml Nothing snippet
             ]
         ]
 
@@ -177,7 +179,7 @@ viewSelectedResultRow dictWord lift model =
             , div [] [ text ("Source: " ++ dictWord.entry_source) ]
             , div [] [ text dictWord.summary ]
             , div [] <|
-                Markdown.toHtml mdRawHtml dictWord.definition
+                Markdown.toHtml mdRawHtml dictWord.definition_html
             ]
         ]
 
@@ -208,7 +210,8 @@ initialModel =
 type alias DictWord =
     { id : Int
     , word : String
-    , definition : String
+    , definition_plain : String
+    , definition_html : String
     , summary : String
     , grammar : String
     , entry_source : String
@@ -283,7 +286,8 @@ dictWordDecoder =
     Decode.succeed DictWord
         |> required "id" int
         |> required "word" string
-        |> required "definition" string
+        |> required "definition_plain" string
+        |> required "definition_html" string
         |> required "summary" string
         |> required "grammar" string
         |> required "entry_source" string

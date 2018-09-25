@@ -104,7 +104,16 @@ WHERE word LIKE :query;`;
 
             .then(() => {
                 const items_sql = `
-SELECT dict_words.*
+SELECT
+    dict_words.id,
+    dict_words.word,
+    snippet(fts_dict_words, 1, '<b>', '</b>', ' ... ', 64) AS definition_plain,
+    dict_words.definition_html,
+    dict_words.summary,
+    dict_words.grammar,
+    dict_words.entry_source,
+    dict_words.from_lang,
+    dict_words.to_lang
 FROM fts_dict_words
 INNER JOIN dict_words ON dict_words.id = fts_dict_words.rowid
 WHERE fts_dict_words MATCH :query

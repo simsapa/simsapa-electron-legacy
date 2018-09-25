@@ -1,6 +1,6 @@
 {
     "name": "simsapa",
-    "productName": "simsapa",
+    "productName": "Simsapa",
     "version": "0.1.0",
     "description": "Read the suttas and other Dhamma texts. Includes Pali - English dictionaries.",
     "main": "src/index.js",
@@ -46,9 +46,10 @@
                 "ignore": [ "gui-src" ]
             },
             "electronWinstallerConfig": {
-                "name": "simsapa",
-                "title": "Siṃsapā Dhamma Reader",
-                "authors": "Siṃsapā Dhamma Reader",
+                "name": "Simsapa",
+                "owner": "Simsapa",
+                "title": "Simsapa",
+                "authors": "Simsapa",
                 "iconUrl": "https://raw.githubusercontent.com/simsapa/simsapa/develop/src/static/assets/icons/logo-letter-w1024.ico",
                 "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
             },

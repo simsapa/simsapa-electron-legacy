@@ -3,13 +3,14 @@
 module.exports = (sequelize, DataTypes) => {
 
   const DictWord = sequelize.define('DictWord', {
-      word:         DataTypes.STRING,
-      definition:   DataTypes.STRING,
-      summary:      DataTypes.STRING,
-      grammar:      DataTypes.STRING,
-      entry_source: DataTypes.STRING,
-      from_lang:    DataTypes.STRING,
-      to_lang:      DataTypes.STRING
+      word:             DataTypes.STRING,
+      definition_plain: DataTypes.STRING,
+      definition_html:  DataTypes.STRING,
+      summary:          DataTypes.STRING,
+      grammar:          DataTypes.STRING,
+      entry_source:     DataTypes.STRING,
+      from_lang:        DataTypes.STRING,
+      to_lang:          DataTypes.STRING
   }, {});
 
   DictWord.associate = function(models) {};
