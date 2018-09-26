@@ -118,8 +118,11 @@ viewLookupResults lift model =
         RemoteData.Success res ->
             div [] (List.map (\x -> viewLookupResultRow x lift model) res)
 
+
+
 -- TODO: for word matches, show the summary
 -- TODO: for fulltext matches, show the definition_plain snippet
+
 
 viewLookupResultRow : DictWord -> (Msg m -> m) -> Model -> Html m
 viewLookupResultRow dictWord lift model =
@@ -127,6 +130,7 @@ viewLookupResultRow dictWord lift model =
         s =
             if String.length dictWord.summary > 0 then
                 dictWord.summary
+
             else
                 dictWord.definition_plain
 
@@ -134,8 +138,8 @@ viewLookupResultRow dictWord lift model =
             String.words s
 
         snippet =
-            if List.length words > 10 then
-                String.join " " (List.take 10 words) ++ "..."
+            if List.length words > 30 then
+                String.join " " (List.take 30 words) ++ "..."
 
             else
                 String.join " " words
@@ -146,7 +150,7 @@ viewLookupResultRow dictWord lift model =
         , onClick (lift (AddToSelectedResults dictWord))
         ]
         [ column cM
-            []
+            [ class "is-one-fifth" ]
             [ div
                 [ style "font-weight" "bold" ]
                 [ text dictWord.word ]
@@ -154,8 +158,15 @@ viewLookupResultRow dictWord lift model =
         , column cM
             []
             [ div
-                [ style "padding-left" "1em" ] <|
-                    Markdown.toHtml Nothing snippet
+                [ style "padding-left" "1em" ]
+              <|
+                Markdown.toHtml Nothing snippet
+            ]
+        , column cM
+            [ class "is-one-fifth" ]
+            [ div
+                []
+                [ text dictWord.entry_source ]
             ]
         ]
 
@@ -254,7 +265,7 @@ update lift msg model =
                 m =
                     let
                         wordList =
-                            List.filter (\x -> not (x.word == dictWord.word)) model.selectedWordsList
+                            List.filter (\x -> not (x.word == dictWord.word && x.entry_source == dictWord.entry_source)) model.selectedWordsList
                     in
                     { model | selectedWordsList = dictWord :: wordList }
             in

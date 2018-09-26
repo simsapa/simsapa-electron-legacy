@@ -28,6 +28,36 @@ cSM =
 
 view : (Msg m -> m) -> Html m -> Model -> List (Html m)
 view lift topNav model =
+    let
+        searchColumn =
+            column cM
+                [ class "page-content-outer-controls-with-scroll" ]
+                [ div [ class "page-content-inner-controls-with-scroll" ]
+                    [ topNav
+                    , BL.section Spaced
+                        []
+                        [ searchInput lift model
+                        , viewLookupResults lift model
+                        ]
+                    ]
+                ]
+
+        readingColumn =
+            column cM
+                [ class "page-content-outer-reading-with-scroll" ]
+                [ div [ class "page-content-inner-reading-with-scroll" ]
+                    [ readingHero lift model ]
+                ]
+
+        displayColumns =
+            if not model.isReadingExpanded && model.selectedText /= Nothing then
+                [ searchColumn
+                , readingColumn
+                ]
+
+            else
+                [ searchColumn ]
+    in
     if model.isReadingExpanded then
         [ columns myColumnsModifiers
             [ class "page-wrap-with-scroll" ]
@@ -40,25 +70,11 @@ view lift topNav model =
         ]
 
     else
-        [ columns myColumnsModifiers
+        [ div [ class "selected-text-list-tabs" ]
+            [ selectedTextListTabs lift model ]
+        , columns myColumnsModifiers
             [ class "page-wrap-with-scroll" ]
-            [ column cM
-                [ class "page-content-outer-controls-with-scroll" ]
-                [ div [ class "page-content-inner-controls-with-scroll" ]
-                    [ topNav
-                    , BL.section Spaced
-                        []
-                        [ searchInput lift model
-                        , viewLookupResults lift model
-                        ]
-                    ]
-                ]
-            , column cM
-                [ class "page-content-outer-reading-with-scroll" ]
-                [ div [ class "page-content-inner-reading-with-scroll" ]
-                    [ readingHero lift model ]
-                ]
-            ]
+            displayColumns
         ]
 
 
@@ -76,12 +92,18 @@ readingHero lift model =
 
             else
                 div
+
+        wrapperClass =
+            if model.isReadingExpanded then
+                "reading"
+
+            else
+                "reading split-view"
     in
-    div [ class "reading" ]
-        [ selectedTextListTabs lift model
-        , readButton lift model
+    div []
+        [ readButton lift model
         , contentWrapper
-            [ class "reading" ]
+            [ class wrapperClass ]
             [ hero { bold = False, size = Medium, color = Default }
                 []
                 [ heroBody [] contentHeading ]
@@ -92,7 +114,7 @@ readingHero lift model =
 
 selectedTextListTabs : (Msg m -> m) -> Model -> Html m
 selectedTextListTabs lift model =
-    tabs { style = Boxed, alignment = Left, size = Standard }
+    tabs { style = Toggle, alignment = Left, size = Standard }
         []
         []
         (List.map (\x -> textListTab x lift model) model.selectedTextList)
@@ -112,18 +134,28 @@ textListTab t lift model =
     case t of
         SelectedRootText t_ ->
             tab isCurrentReading
-                [ onClick (lift (SetSelectedReadText t)) ]
                 []
-                [ span [ class "tab-acronym" ] [ text t_.acronym ]
-                , span [ class "tab-title" ] [ text t_.title ]
+                []
+                [ span [ onClick (lift (SetSelectedReadText t)) ]
+                    [ span [ class "tab-acronym" ] [ text t_.acronym ]
+                    , span [ class "tab-title" ] [ text t_.title ]
+                    ]
+                , icon Standard
+                    [ onClick (lift (RemoveFromSelectedTexts (SelectedRootText t_))) ]
+                    [ i [ class "mdi mdi-close" ] [] ]
                 ]
 
         SelectedTranslatedText t_ ->
             tab isCurrentReading
-                [ onClick (lift (SetSelectedReadText t)) ]
                 []
-                [ span [ class "tab-acronym" ] [ text t_.acronym ]
-                , span [ class "tab-title" ] [ text t_.title ]
+                []
+                [ span [ onClick (lift (SetSelectedReadText t)) ]
+                    [ span [ class "tab-acronym" ] [ text t_.acronym ]
+                    , span [ class "tab-title" ] [ text t_.title ]
+                    ]
+                , icon Standard
+                    [ onClick (lift (RemoveFromSelectedTexts (SelectedTranslatedText t_))) ]
+                    [ i [ class "mdi mdi-close" ] [] ]
                 ]
 
 
@@ -162,7 +194,7 @@ viewLookupResults lift model =
 
 viewQueryData : (Msg m -> m) -> TextQueryData -> Model -> Html m
 viewQueryData lift data model =
-    div []
+    div [ class "search-results" ]
         [ div [] (List.map (\x -> viewRootTextRow lift x model) data.root_texts)
         , div [] (List.map (\x -> viewTranslatedTextRow lift x model) data.translated_texts)
         ]
@@ -175,8 +207,8 @@ viewRootTextRow lift root_text model =
             String.words root_text.content_plain
 
         snippet =
-            if List.length words > 20 then
-                String.join " " (List.take 20 words) ++ "..."
+            if List.length words > 30 then
+                String.join " " (List.take 30 words) ++ "..."
 
             else
                 String.join " " words
@@ -193,8 +225,9 @@ viewRootTextRow lift root_text model =
             [ style "font-weight" "bold" ]
             [ text root_text.title ]
         , Html.div
-            [ style "padding-left" "1em" ] <|
-                Markdown.toHtml Nothing snippet
+            [ style "padding-left" "1em" ]
+          <|
+            Markdown.toHtml Nothing snippet
         ]
 
 
@@ -205,8 +238,8 @@ viewTranslatedTextRow lift translated_text model =
             String.words translated_text.content_plain
 
         snippet =
-            if List.length words > 20 then
-                String.join " " (List.take 20 words) ++ "..."
+            if List.length words > 30 then
+                String.join " " (List.take 30 words) ++ "..."
 
             else
                 String.join " " words
@@ -226,8 +259,9 @@ viewTranslatedTextRow lift translated_text model =
             [ style "font-style" "italic" ]
             [ text translated_text.author_uid ]
         , Html.div
-            [ style "padding-left" "1em" ] <|
-                Markdown.toHtml Nothing snippet
+            [ style "padding-left" "1em" ]
+          <|
+            Markdown.toHtml Nothing snippet
         ]
 
 
@@ -335,8 +369,8 @@ type alias Model =
 initialModel =
     { lookupQuery = ""
     , lookupResults = RemoteData.NotAsked
-    , selectedText = Just (SelectedTranslatedText initialTranslatedText)
-    , selectedTextList = [ SelectedTranslatedText initialTranslatedText ]
+    , selectedText = Nothing
+    , selectedTextList = []
     , isReadingExpanded = False
     }
 
@@ -406,6 +440,7 @@ type SelectedText
 type Msg m
     = NoOp
     | AddToSelectedTexts SelectedText
+    | RemoveFromSelectedTexts SelectedText
     | SetTextLookupQuery String
     | TextQueryDataReceived (WebData TextQueryData)
     | SetSelectedReadText SelectedText
@@ -441,6 +476,23 @@ update lift msg model =
                             List.filter (\x -> not (getUid x == t_uid)) m.selectedTextList
                     in
                     { m | selectedTextList = selectedText :: textList }
+            in
+            ( m_, Cmd.none )
+
+        RemoveFromSelectedTexts t ->
+            let
+                t_uid =
+                    getUid t
+
+                m =
+                    let
+                        textList =
+                            List.filter (\x -> not (getUid x == t_uid)) model.selectedTextList
+                    in
+                    { model | selectedTextList = textList }
+
+                m_ =
+                    { m | selectedText = List.head m.selectedTextList }
             in
             ( m_, Cmd.none )
 

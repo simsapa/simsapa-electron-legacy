@@ -7389,16 +7389,16 @@ label.panel-block:hover {
 }
 
 .tabs.is-toggle li:first-child a {
-  border-radius: 4px 0 0 4px;
+  border-radius: 0px 0 0 0px;
 }
 
 .tabs.is-toggle li:last-child a {
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 0px 0px 0;
 }
 
 .tabs.is-toggle li.is-active a {
-  background-color: #3273dc;
-  border-color: #3273dc;
+  background-color: #2e2305;
+  border-color: #2e2305;
   color: #fff;
   z-index: 1;
 }
@@ -10358,7 +10358,6 @@ html, body {
 }
 
 .content {
-  width: 900px;
   margin: auto;
 }
 
@@ -10409,6 +10408,13 @@ button.button.is-rounded.readbutton {
   padding-right: 0.75em;
   border-color: #363636;
   background-color: #FDF6E3;
+  position: fixed;
+  bottom: 60px;
+  right: 40px;
+}
+
+.search-results {
+  padding-bottom: 5rem;
 }
 
 html, body {
@@ -10425,10 +10431,12 @@ html, body {
   font-size: 24px;
   color: #1a1a1a;
   line-height: 1.4;
+  padding: 1em 1em 5rem 1.5em;
 }
 
-.reading div.readtabs {
-  margin-bottom: -1.5em;
+.reading.split-view {
+  font-size: 20px;
+  padding-right: 3em;
 }
 
 .reading h1, .reading h2, .reading h3, .reading h4, .reading h5, .reading h6 {
@@ -10469,6 +10477,15 @@ html, body {
   letter-spacing: 0.8px;
   word-spacing: 3px;
   margin-top: 3rem;
+}
+
+div.selected-text-list-tabs .tabs {
+  flex-wrap: wrap;
+}
+
+div.selected-text-list-tabs .tabs ul {
+  flex-wrap: wrap;
+  flex-shrink: 1;
 }
 
 .tab-acronym {
