@@ -2,9 +2,9 @@ echo "=== before_deploy.sh ==="
 
 echo "OS: '$TRAVIS_OS_NAME'"
 
-if [ -d out/ ]
+if [ -d out/make/ ]
 then
-    ls -lhR out/
+    ls -lh out/make/
 else
-    echo "Doesn't exist: ./out"
+    echo "Doesn't exist: ./out/make/"
 fi

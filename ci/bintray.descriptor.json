@@ -8,9 +8,9 @@
         "name": "latest"
     },
     "files": [
-        {"includePattern": "./out/(.*\.deb)",
+        {"includePattern": "./out/make/(.*\.deb)",
          "uploadPattern": "$1", "matrixParams": {"override": 1}},
-        {"includePattern": "./out/(.*\.zip|.*\.dmg)",
+        {"includePattern": "./out/make/(.*\.zip|.*\.dmg)",
          "uploadPattern": "$1", "matrixParams": {"override": 1}}
     ]
 }
