@@ -41,11 +41,12 @@ const db = require('./models');
 const Op = Sequelize.Op;
 
 const createWindow = () => {
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
-        icon: path.join(__dirname, "static", "assets", "icons", "simsapa-logo-text-w256.png")
+        icon: path.join(__dirname, "static", "assets", "icons", "logo-letter-w64.png")
     });
 
     express_app.use(bodyParser.json());
@@ -64,8 +65,8 @@ const createWindow = () => {
             .then((data) => res.send(data))
 
             .catch((err) => {
-                console.log("There was an error querying authors", JSON.stringify(err))
-                return res.send(err)
+                console.log("There was an error querying authors", JSON.stringify(err));
+                return res.send(err);
             });
     });
 
@@ -94,8 +95,8 @@ WHERE word LIKE :query;`;
                     .then((data) => results.push.apply(results, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying dict_words", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying dict_words", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
@@ -103,7 +104,16 @@ WHERE word LIKE :query;`;
 
             .then(() => {
                 const items_sql = `
-SELECT dict_words.*
+SELECT
+    dict_words.id,
+    dict_words.word,
+    snippet(fts_dict_words, 1, '<b>', '</b>', ' ... ', 64) AS definition_plain,
+    dict_words.definition_html,
+    dict_words.summary,
+    dict_words.grammar,
+    dict_words.entry_source,
+    dict_words.from_lang,
+    dict_words.to_lang
 FROM fts_dict_words
 INNER JOIN dict_words ON dict_words.id = fts_dict_words.rowid
 WHERE fts_dict_words MATCH :query
@@ -112,7 +122,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        query: query + "*"
+                        query: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.DictWord
@@ -125,8 +135,8 @@ LIMIT 20;`;
                     })
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_dict_words", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_dict_words", JSON.stringify(err));
+                        return res.send(err);
                     });
             });
     });
@@ -163,16 +173,25 @@ LIMIT 20;`;
                     .then((data) => results.root_texts.push.apply(results.root_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying root_texts", JSON.stringify(err))
-                        return res.send(err)
-                    })
+                        console.log("There was an error querying root_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
             })
 
         // fts_root_texts.content_plain contains
 
             .then(() => {
                 const items_sql = `
-SELECT root_texts.*
+SELECT
+    root_texts.id,
+    root_texts.uid,
+    root_texts.author_uid,
+    root_texts.acronym,
+    root_texts.volpage,
+    root_texts.title,
+    root_texts.content_language,
+    snippet(fts_root_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    root_texts.content_html
 FROM fts_root_texts
 INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
 WHERE fts_root_texts MATCH :search_content
@@ -181,7 +200,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        search_content: query + "*"
+                        search_content: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.RootText
@@ -190,19 +209,19 @@ LIMIT 20;`;
                     .then((data) => results.root_texts.push.apply(results.root_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_root_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_root_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
         // translated_texts.acronym
-        // translated_text.translated_title
+        // translated_text.title
 
             .then(() => {
                 const items_sql = `
 SELECT translated_texts.*
 FROM translated_texts
-WHERE acronym LIKE :q_acronym OR translated_title LIKE :q_title
+WHERE acronym LIKE :q_acronym OR title LIKE :q_title
 ORDER BY acronym ASC
 LIMIT 20;`;
 
@@ -218,8 +237,8 @@ LIMIT 20;`;
                     .then((data) => results.translated_texts.push.apply(results.translated_texts, data))
 
                     .catch((err) => {
-                        console.log("There was an error querying translated_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying translated_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             })
 
@@ -229,7 +248,17 @@ LIMIT 20;`;
 
             .then(() => {
                 const items_sql = `
-SELECT translated_texts.*
+SELECT
+    translated_texts.id,
+    translated_texts.uid,
+    translated_texts.author_uid,
+    translated_texts.acronym,
+    translated_texts.volpage,
+    translated_texts.title,
+    translated_texts.root_title,
+    translated_texts.content_language,
+    snippet(fts_translated_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    translated_texts.content_html
 FROM fts_translated_texts
 INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
 WHERE fts_translated_texts MATCH :search_content
@@ -238,7 +267,7 @@ LIMIT 20;`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
-                        search_content: query + "*"
+                        search_content: escape_string_for_fts(query) + "*"
                     },
                     type: sequelize.QueryTypes.SELECT,
                     model: db.TranslatedText
@@ -251,8 +280,8 @@ LIMIT 20;`;
                     })
 
                     .catch((err) => {
-                        console.log("There was an error querying fts_translated_texts", JSON.stringify(err))
-                        return res.send(err)
+                        console.log("There was an error querying fts_translated_texts", JSON.stringify(err));
+                        return res.send(err);
                     });
             });
     });
@@ -269,10 +298,7 @@ LIMIT 20;`;
         slashes: true
     }));
 
-    mainWindow.setMenuBarVisibility(false);
-
-    // Open the DevTools.
-    //mainWindow.webContents.openDevTools();
+    mainWindow.setMenuBarVisibility(true);
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
@@ -307,3 +333,15 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+// https://www.sqlite.org/fts5.html#full_text_query_syntax
+// https://stackoverflow.com/questions/28971633/how-to-escape-string-for-sqlite-fts-query
+// https://stackoverflow.com/questions/28860704/automatic-or-queries-using-sqlite-fts4
+
+// Don't escape double quotes -- we'll warn the user that they have to be in pairs.
+
+function escape_string_for_fts(query) {
+    return query
+        .replace(/'/g, "''")
+        .replace(/[^A-Za-z0-9" ]/gi, '"$&"');
+}

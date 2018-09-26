@@ -1,4 +1,8 @@
-$navbar-item-img-max-height: 70px
+$navbar-item-img-max-height: 48px
+
+$tabs-toggle-link-active-background-color: #2e2305
+$tabs-toggle-link-active-border-color: #2e2305
+$tabs-toggle-link-radius: 0px
 
 $section-padding:        3rem 1.5rem !default
 $section-padding-medium: 3rem 1.5rem !default
@@ -21,7 +25,7 @@ html, body
   overflow: hidden
 
 .content
-  width: 900px
+  //width: 900px
   margin: auto
 
 .page-wrap-with-scroll
@@ -77,7 +81,12 @@ button.button.is-rounded.readbutton
   padding-right: 0.75em
   border-color: #363636
   background-color: $solarized-light-bg
+  position: fixed
+  bottom: 60px
+  right: 40px
 
+.search-results
+  padding-bottom: 5rem
 
 // UI Interface:
 // Source Sans Pro
@@ -99,9 +108,10 @@ html, body
   font-size: 24px
   color: #1a1a1a
   line-height: 1.4
-
-  div.readtabs
-    margin-bottom: -1.5em
+  padding: 1em 1em 5rem 1.5em
+  &.split-view
+    font-size: 20px
+    padding-right: 3em
 
   h1, h2, h3, h4, h5, h6
     font-family: "Abhaya Libre SSP"
@@ -132,6 +142,14 @@ html, body
       letter-spacing: 0.8px
       word-spacing: 3px
       margin-top: 3rem
+
+div.selected-text-list-tabs
+  .tabs
+    flex-wrap: wrap
+    ul
+      flex-wrap: wrap
+      flex-shrink: 1
+
 
 .tab-acronym
   font-family: "Source Sans Pro SSP"

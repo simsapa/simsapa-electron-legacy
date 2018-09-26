@@ -24,7 +24,7 @@ view lift model =
             )
             [ navbarItem False
                 []
-                [ img [ src "/assets/images/simsapa-logo-horizontal-h70.png" ] [] ]
+                [ img [ src "/assets/icons/logo-letter-w96.png" ] [] ]
             ]
         , navbarMenu False
             []

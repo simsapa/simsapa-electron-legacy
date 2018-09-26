@@ -113,21 +113,33 @@ viewLookupResults lift model =
             div [] [ text "loading" ]
 
         RemoteData.Failure _ ->
-            div [] [ text "O NOES" ]
+            div [] [ text "Error: query failure" ]
 
         RemoteData.Success res ->
             div [] (List.map (\x -> viewLookupResultRow x lift model) res)
 
 
+
+-- TODO: for word matches, show the summary
+-- TODO: for fulltext matches, show the definition_plain snippet
+
+
 viewLookupResultRow : DictWord -> (Msg m -> m) -> Model -> Html m
 viewLookupResultRow dictWord lift model =
     let
-        words =
-            String.words dictWord.summary
+        s =
+            if String.length dictWord.summary > 0 then
+                dictWord.summary
 
-        summary =
-            if List.length words > 10 then
-                String.join " " (List.take 10 words) ++ "..."
+            else
+                dictWord.definition_plain
+
+        words =
+            String.words s
+
+        snippet =
+            if List.length words > 30 then
+                String.join " " (List.take 30 words) ++ "..."
 
             else
                 String.join " " words
@@ -138,7 +150,7 @@ viewLookupResultRow dictWord lift model =
         , onClick (lift (AddToSelectedResults dictWord))
         ]
         [ column cM
-            []
+            [ class "is-one-fifth" ]
             [ div
                 [ style "font-weight" "bold" ]
                 [ text dictWord.word ]
@@ -147,7 +159,14 @@ viewLookupResultRow dictWord lift model =
             []
             [ div
                 [ style "padding-left" "1em" ]
-                [ text summary ]
+              <|
+                Markdown.toHtml Nothing snippet
+            ]
+        , column cM
+            [ class "is-one-fifth" ]
+            [ div
+                []
+                [ text dictWord.entry_source ]
             ]
         ]
 
@@ -171,7 +190,7 @@ viewSelectedResultRow dictWord lift model =
             , div [] [ text ("Source: " ++ dictWord.entry_source) ]
             , div [] [ text dictWord.summary ]
             , div [] <|
-                Markdown.toHtml mdRawHtml dictWord.definition
+                Markdown.toHtml mdRawHtml dictWord.definition_html
             ]
         ]
 
@@ -202,7 +221,8 @@ initialModel =
 type alias DictWord =
     { id : Int
     , word : String
-    , definition : String
+    , definition_plain : String
+    , definition_html : String
     , summary : String
     , grammar : String
     , entry_source : String
@@ -245,7 +265,7 @@ update lift msg model =
                 m =
                     let
                         wordList =
-                            List.filter (\x -> not (x.word == dictWord.word)) model.selectedWordsList
+                            List.filter (\x -> not (x.word == dictWord.word && x.entry_source == dictWord.entry_source)) model.selectedWordsList
                     in
                     { model | selectedWordsList = dictWord :: wordList }
             in
@@ -277,7 +297,8 @@ dictWordDecoder =
     Decode.succeed DictWord
         |> required "id" int
         |> required "word" string
-        |> required "definition" string
+        |> required "definition_plain" string
+        |> required "definition_html" string
         |> required "summary" string
         |> required "grammar" string
         |> required "entry_source" string

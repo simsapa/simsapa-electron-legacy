@@ -1,8 +1,8 @@
 {
     "name": "simsapa",
-    "productName": "simsapa",
+    "productName": "Simsapa",
     "version": "0.1.0",
-    "description": "Simsapa Dhamma Reader",
+    "description": "Read the suttas and other Dhamma texts. Includes Pali - English dictionaries.",
     "main": "src/index.js",
     "scripts": {
         "start": "electron-forge start",
@@ -15,7 +15,7 @@
         "sass-build-autoprefix": "postcss --use autoprefixer --map false --output ./src/static/assets/stylesheets/main.css ./src/static/assets/stylesheets/main.css",
         "sass-build-cleancss": "cleancss -o ./src/static/assets/stylesheets/main.min.css ./src/static/assets/stylesheets/main.css",
         "sass-build-clean": "rimraf ./src/static/assets/stylesheets",
-        "sass-build-sass": "node-sass --output-style expanded --source-map true ./sass/main.sass ./src/static/assets/stylesheets/main.css",
+        "sass-build-sass": "node-sass --output-style expanded --source-map true ./gui-src/sass/main.sass ./src/static/assets/stylesheets/main.css",
         "sass-start": "npm run sass-build-sass -- --watch"
     },
     "repository": "https://github.com/simsapa/simsapa",
@@ -42,11 +42,16 @@
             },
             "electronPackagerConfig": {
                 "packageManager": "yarn",
-                "icon": "./src/static/assets/icons/simsapa-logo-text-w256",
-                "ignore": [ "sass", "elm" ]
+                "icon": "./src/static/assets/icons/logo-letter-w1024",
+                "ignore": [ "gui-src" ]
             },
             "electronWinstallerConfig": {
-                "name": "simsapa"
+                "name": "Simsapa",
+                "owner": "Simsapa",
+                "title": "Simsapa",
+                "authors": "Simsapa",
+                "iconUrl": "https://raw.githubusercontent.com/simsapa/simsapa/develop/src/static/assets/icons/logo-letter-w1024.ico",
+                "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
             },
             "electronInstallerDebian": {},
             "electronInstallerRedhat": {},
