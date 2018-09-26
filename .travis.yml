@@ -21,7 +21,7 @@ cache:
     - "$HOME/.electron"
 
 before_install:
-  - echo "Skipping before_install."
+  - sudo apt-get install fakeroot dpkg
 
 install:
   - npm install -g npm@6.4.1
