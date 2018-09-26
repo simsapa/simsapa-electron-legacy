@@ -1,14 +1,10 @@
-case "$TRAVIS_OS_NAME" in
-    linux)
-        ls -lh ./
-        ls -lh out/
-        ls -lh dist/
-        ;;
-    osx)
-        ls -lh ./
-        ls -lh out/
-        ls -lh dist/
-        ls -lh dist/mac
-        ls -lhR dist/
-        ;;
-esac
+echo "=== before_deploy.sh ==="
+
+echo "OS: '$TRAVIS_OS_NAME'"
+
+if [ -d out/ ]
+then
+    ls -lhR out/
+else
+    echo "Doesn't exist: ./out"
+fi
