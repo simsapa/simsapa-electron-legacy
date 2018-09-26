@@ -58,7 +58,7 @@ before_deploy:
 
 deploy:
   provider: bintray
-  file: $TRAVIS_BUILD_DIR/bintray.descriptor.json
+  file: $TRAVIS_BUILD_DIR/ci/bintray.descriptor.json
   skip_cleanup: true
   user: gambhiro
   on:
