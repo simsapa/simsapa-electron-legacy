@@ -1,0 +1,16 @@
+{
+    "package": {
+        "name": "simsapa",
+        "repo": "simsapa",
+        "subject": "gambhiro"
+    },
+    "version": {
+        "name": "latest"
+    },
+    "files": [
+        {"includePattern": "./(.*\.deb)",
+         "uploadPattern": "$1", "matrixParams": {"override": 1}},
+        {"includePattern": "./(.*\.zip|.*\.dmg)",
+         "uploadPattern": "$1", "matrixParams": {"override": 1}}
+    ]
+}

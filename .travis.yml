@@ -53,3 +53,16 @@ after_success:
 after_script:
   - echo "Hello after_script."
 
+before_deploy:
+  - bash ci/before_deploy.sh
+
+deploy:
+  provider: bintray
+  file: $TRAVIS_BUILD_DIR/bintray.descriptor.json
+  skip_cleanup: true
+  user: gambhiro
+  on:
+    branch: master
+  key:
+    secure: RfC9SIhCuF1bxnJVoA55VoyNgMcRcTh33GL6K8+YBTpqdCQ8V6M/0mjp6nSExijogwDvwSjVg5gxRACrt1whTo434INcLUFY6i0KWsXs0Zb3g//PC3XcQsOXKXCt/k6YHVtRQBC1egglo45lhn/qhETURI3iVwRWL8bHQZjmXwY+SmAiegxG/5rtFM8iVF2znZRGwpztQmAWuHJc2BIPypM86Ww4m9yI8coKGyOwf98nnS/nvIpSmtZ0TN3b1MR+o4OGJd++fDcWpOpvRThpfm3IPUq7ckhfymWR3+JZYPbyin5B0X6SpMHGgd/PqUL3tq1OSjZJ06AbfUltgIs28ajL5KWiRgZvnjH6BTEt7JgTgMN2/G+k7h8aikABpXHD19J33gcj6J2MSTtho3fFNNy0ycnNGpmZsZHlCyAY42SN7jWtisjCfqXNidXFOC9QI0upszwmLL4wDJEqva/3bUm0N/IsVl1SuQe2/Pm54n1eiiKD5uOvK5F7ZmZHS3b6CZ51GspXrGtr/XjZrb1RqzkO0fK/pPGadvxoE5oz/jvmUq6Oir9oJnoOQjt8HW/BXFW9H840nW7G39NIX+0mhjV4zqoGOAtNMmKnuno5thzvn/IddBQQLZKle74Kb9Y39kmePt5yVT5bmPpwNLPvDaAlRKG6qzxFp9eSvWoBtXU=
+
