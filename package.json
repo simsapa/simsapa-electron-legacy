@@ -36,8 +36,7 @@
                     "zip"
                 ],
                 "linux": [
-                    "deb",
-                    "rpm"
+                    "deb"
                 ]
             },
             "electronPackagerConfig": {

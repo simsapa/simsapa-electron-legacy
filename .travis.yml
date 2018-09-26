@@ -20,8 +20,18 @@ cache:
     - "$HOME/.cache/yarn/v1"
     - "$HOME/.electron"
 
+addons:
+  apt:
+    packages:
+      - fakeroot
+      - dpkg
+  homebrew:
+    packages:
+      - fakeroot
+      - dpkg
+
 before_install:
-  - sudo apt-get install fakeroot dpkg
+  - echo "Hello before_install."
 
 install:
   - npm install -g npm@6.4.1
