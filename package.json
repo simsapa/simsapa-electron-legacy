@@ -1,6 +1,6 @@
 {
     "name": "simsapa",
-    "productName": "Simsapa",
+    "productName": "simsapa",
     "version": "0.1.0",
     "description": "Read the suttas and other Dhamma texts. Includes Pali - English dictionaries.",
     "main": "src/index.js",
@@ -24,7 +24,7 @@
         "dhamma",
         "suttas"
     ],
-    "author": "gambhiro",
+    "author": "Simsapa",
     "license": "MIT",
     "config": {
         "forge": {
@@ -45,14 +45,22 @@
                 "ignore": [ "gui-src" ]
             },
             "electronWinstallerConfig": {
-                "name": "Simsapa",
+                "name": "Simsapa Dhamma Reader",
                 "owner": "Simsapa",
-                "title": "Simsapa",
+                "title": "Simsapa Dhamma Reader",
                 "authors": "Simsapa",
                 "iconUrl": "https://raw.githubusercontent.com/simsapa/simsapa/develop/src/static/assets/icons/logo-letter-w1024.ico",
                 "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
             },
-            "electronInstallerDebian": {},
+            "electronInstallerDebian": {
+                "categories": [
+                    "Utility"
+                ],
+                "productName": "Simsapa Dhamma Reader",
+                "section": "utils",
+                "depends": "libgconf2-4",
+                "maintainer": "Gambhiro"
+            },
             "electronInstallerRedhat": {},
             "github_repository": {
                 "owner": "simsapa",
