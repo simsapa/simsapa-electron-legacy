@@ -45,7 +45,7 @@
                 "ignore": [ "gui-src" ]
             },
             "electronWinstallerConfig": {
-                "name": "Simsapa Dhamma Reader",
+                "name": "Simsapa.DhammaReader",
                 "owner": "Simsapa",
                 "title": "Simsapa Dhamma Reader",
                 "authors": "Simsapa",
@@ -53,13 +53,20 @@
                 "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
             },
             "electronInstallerDebian": {
+                "productName": "Simsapa Dhamma Reader",
+                "icon": "./src/static/assets/icons/logo-letter-w1024.png",
                 "categories": [
                     "Utility"
                 ],
-                "productName": "Simsapa Dhamma Reader",
                 "section": "utils",
                 "depends": "libgconf2-4",
-                "maintainer": "Gambhiro"
+                "maintainer": "Gambhiro Bhikkhu <gambhiro.bhikkhu.85@gmail.com>"
+            },
+            "electronInstallerDMG": {
+                "name": "SimsapaDhammaReader",
+                "title": "Simsapa Dhamma Reader",
+                "icon": "./src/static/assets/icons/logo-letter-w1024.icns",
+                "background-color": "#f2f2f2"
             },
             "electronInstallerRedhat": {},
             "github_repository": {
