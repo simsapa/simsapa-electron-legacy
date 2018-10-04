@@ -53,7 +53,7 @@ init flags url key =
 
 initialModel =
     { route = Route.SearchTexts
-    , topNav = { activeLink = Just Route.SearchTexts }
+    , topNav = View.TopNav.initialModel
     , searchTexts = View.SearchTexts.initialModel
     , searchDictionary = View.SearchDictionary.initialModel
     }
@@ -114,22 +114,22 @@ view model =
 viewBody : Model -> List (Html Msg)
 viewBody model =
     let
-        topNav = View.TopNav.view TopNavMsg model.topNav
+        topNav =
+            View.TopNav.view TopNavMsg model.topNav
     in
     case model.route of
         Route.Home ->
-            [ topNav
+            [ topNav Nothing
             , div [] [ text "hey home" ]
             ]
 
         Route.ReadText ->
-            [ topNav
+            [ topNav Nothing
             , div [] [ text "hey read texts" ]
             ]
 
         Route.SearchTexts ->
-            View.SearchTexts.view SearchTextsMsg topNav model.searchTexts
+            View.SearchTexts.view SearchTextsMsg model.searchTexts topNav
 
         Route.SearchDictionary ->
-            View.SearchDictionary.view SearchDictionaryMsg topNav model.searchDictionary
-
+            View.SearchDictionary.view SearchDictionaryMsg model.searchDictionary topNav

@@ -10403,16 +10403,6 @@ html, body {
   background: rgba(100, 100, 100, 0.1);
 }
 
-button.button.is-rounded.readbutton {
-  padding-left: 0.75em;
-  padding-right: 0.75em;
-  border-color: #363636;
-  background-color: #FDF6E3;
-  position: fixed;
-  bottom: 60px;
-  right: 40px;
-}
-
 .search-results {
   padding-bottom: 5rem;
 }
@@ -10423,6 +10413,10 @@ html, body {
   font-size: 16px;
   color: #1a1a1a;
   line-height: 1.4;
+}
+
+.is-mobile .navbar-item img {
+  max-height: 32px;
 }
 
 .reading {

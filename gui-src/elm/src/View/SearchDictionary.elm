@@ -26,14 +26,14 @@ cSM =
     columnsModifiers
 
 
-view : (Msg m -> m) -> Html m -> Model -> List (Html m)
-view lift topNav model =
+view : (Msg m -> m) -> Model -> (Maybe (List (Html m)) -> Html m) -> List (Html m)
+view lift model topNav =
     [ columns myColumnsModifiers
         [ class "page-wrap-with-scroll" ]
         [ column cM
             [ class "page-content-outer-controls-with-scroll" ]
             [ div [ class "page-content-inner-controls-with-scroll" ]
-                [ topNav
+                [ topNav Nothing
                 , BL.section Spaced
                     []
                     [ searchInput lift model

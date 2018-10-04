@@ -1,7 +1,7 @@
-module View.TopNav exposing (Model, Msg(..), update, view)
+module View.TopNav exposing (Model, Msg(..), initialModel, update, view)
 
 import Bulma.Components exposing (..)
-import Bulma.Elements exposing (..)
+import Bulma.Elements as BE exposing (..)
 import Bulma.Form exposing (..)
 import Bulma.Modifiers exposing (..)
 import Html exposing (..)
@@ -10,13 +10,24 @@ import Html.Events exposing (onClick)
 import Route exposing (Route)
 
 
-view : (Msg m -> m) -> Model -> Html m
-view lift model =
+view : (Msg m -> m) -> Model -> Maybe (List (Html m)) -> Html m
+view lift model buttons =
+    let
+        buttonsContent =
+            case buttons of
+                Nothing ->
+                    []
+
+                Just x ->
+                    x
+    in
     navbar navbarModifiers
         []
         [ navbarBrand []
-            (navbarBurger False
-                []
+            (navbarBurger model.isMenuOpen
+                [ onClick (lift ToggleMenu)
+                , style "margin-left" "0"
+                ]
                 [ span [] []
                 , span [] []
                 , span [] []
@@ -25,8 +36,11 @@ view lift model =
             [ navbarItem False
                 []
                 [ img [ src "/assets/icons/logo-letter-w96.png" ] [] ]
+            , navbarItem False
+                [ style "margin" "auto" ]
+                buttonsContent
             ]
-        , navbarMenu False
+        , navbarMenu model.isMenuOpen
             []
             [ navbarStart []
                 [ menuItem "Texts" "mdi-book-open" Route.SearchTexts lift model
@@ -34,6 +48,7 @@ view lift model =
                 ]
             ]
         ]
+
 
 menuItem itemText itemIcon itemRoute lift model =
     let
@@ -49,10 +64,11 @@ menuItem itemText itemIcon itemRoute lift model =
     in
     navbarItemLink isActive_
         [ onClick (lift (NavigateTo itemRoute))
-        , class itemClass ]
-    [ icon Standard [] [ i [ class ("mdi " ++ itemIcon) ] [] ]
-    , span [] [ text itemText ]
-    ]
+        , class itemClass
+        ]
+        [ icon Standard [] [ i [ class ("mdi " ++ itemIcon) ] [] ]
+        , span [] [ text itemText ]
+        ]
 
 
 isActive : Model -> Route -> Bool
@@ -66,12 +82,21 @@ isActive model route =
 
 
 type alias Model =
-    { activeLink : Maybe Route }
+    { activeLink : Maybe Route
+    , isMenuOpen : Bool
+    }
+
+
+initialModel =
+    { activeLink = Just Route.SearchTexts
+    , isMenuOpen = False
+    }
 
 
 type Msg m
     = NoOp
     | NavigateTo Route
+    | ToggleMenu
 
 
 update : (Msg m -> m) -> Msg m -> Model -> ( Model, Cmd m )
@@ -82,3 +107,6 @@ update lift msg model =
 
         NavigateTo route ->
             ( { model | activeLink = Just route }, Cmd.none )
+
+        ToggleMenu ->
+            ( { model | isMenuOpen = not model.isMenuOpen }, Cmd.none )

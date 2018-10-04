@@ -26,56 +26,72 @@ cSM =
     columnsModifiers
 
 
-view : (Msg m -> m) -> Html m -> Model -> List (Html m)
-view lift topNav model =
+view : (Msg m -> m) -> Model -> (Maybe (List (Html m)) -> Html m) -> List (Html m)
+view lift model topNav =
     let
-        searchColumn =
-            column cM
-                [ class "page-content-outer-controls-with-scroll" ]
-                [ div [ class "page-content-inner-controls-with-scroll" ]
-                    [ topNav
-                    , BL.section Spaced
-                        []
-                        [ searchInput lift model
-                        , viewLookupResults lift model
+        bM route =
+            if model.subRoute == route then
+                { buttonModifiers | color = Primary }
+
+            else
+                buttonModifiers
+
+        buttons =
+            [ BE.button (bM Searching)
+                [ onClick (lift (SetSubRoute Searching)) ]
+                [ icon Standard [] [ i [ class "mdi mdi-magnify" ] [] ] ]
+            , BE.button (bM Selecting)
+                [ onClick (lift (SetSubRoute Selecting)) ]
+                [ icon Standard [] [ i [ class "mdi mdi-pin" ] [] ] ]
+            , BE.button (bM Reading)
+                [ onClick (lift (SetSubRoute Reading)) ]
+                [ icon Standard [] [ i [ class "mdi mdi-book-open-variant" ] [] ] ]
+            ]
+    in
+    case model.subRoute of
+        Searching ->
+            [ columns myColumnsModifiers
+                [ class "page-wrap-with-scroll" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , BL.section Spaced
+                            []
+                            [ searchInput lift model
+                            , viewLookupResults lift model
+                            ]
                         ]
                     ]
                 ]
+            ]
 
-        readingColumn =
-            column cM
-                [ class "page-content-outer-reading-with-scroll" ]
-                [ div [ class "page-content-inner-reading-with-scroll" ]
-                    [ readingHero lift model ]
-                ]
-
-        displayColumns =
-            if not model.isReadingExpanded && model.selectedText /= Nothing then
-                [ searchColumn
-                , readingColumn
-                ]
-
-            else
-                [ searchColumn ]
-    in
-    if model.isReadingExpanded then
-        [ columns myColumnsModifiers
-            [ class "page-wrap-with-scroll" ]
-            [ column cM
-                [ class "page-content-outer-reading-with-scroll" ]
-                [ div [ class "page-content-inner-reading-with-scroll" ]
-                    [ readingHero lift model ]
+        Reading ->
+            [ columns myColumnsModifiers
+                [ class "page-wrap-with-scroll" ]
+                [ column cM
+                    [ class "page-content-outer-reading-with-scroll" ]
+                    [ div [ class "page-content-inner-reading-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , readingHero lift model
+                        ]
+                    ]
                 ]
             ]
-        ]
 
-    else
-        [ div [ class "selected-text-list-tabs" ]
-            [ selectedTextListTabs lift model ]
-        , columns myColumnsModifiers
-            [ class "page-wrap-with-scroll" ]
-            displayColumns
-        ]
+        Selecting ->
+            [ columns myColumnsModifiers
+                [ class "page-wrap-with-scroll" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , div [ class "selected-text-list-tabs" ]
+                            [ selectedTextListTabs lift model ]
+                        ]
+                    ]
+                ]
+            ]
 
 
 readingHero lift model =
@@ -85,25 +101,10 @@ readingHero lift model =
 
         contentBody =
             [ viewSelectedTextBody lift model ]
-
-        contentWrapper =
-            if model.isReadingExpanded then
-                container
-
-            else
-                div
-
-        wrapperClass =
-            if model.isReadingExpanded then
-                "reading"
-
-            else
-                "reading split-view"
     in
     div []
-        [ readButton lift model
-        , contentWrapper
-            [ class wrapperClass ]
+        [ container
+            [ class "reading" ]
             [ hero { bold = False, size = Medium, color = Default }
                 []
                 [ heroBody [] contentHeading ]
@@ -157,23 +158,6 @@ textListTab t lift model =
                     [ onClick (lift (RemoveFromSelectedTexts (SelectedTranslatedText t_))) ]
                     [ i [ class "mdi mdi-close" ] [] ]
                 ]
-
-
-readButton : (Msg m -> m) -> Model -> Html m
-readButton lift model =
-    let
-        arrowIcon =
-            if model.isReadingExpanded then
-                "mdi-arrow-expand-right"
-
-            else
-                "mdi-arrow-expand-left"
-    in
-    BE.button { buttonModifiers | rounded = True }
-        [ onClick (lift ToggleExpandReading)
-        , class "readbutton"
-        ]
-        [ icon Standard [] [ i [ class ("mdi " ++ arrowIcon) ] [] ] ]
 
 
 viewLookupResults : (Msg m -> m) -> Model -> Html m
@@ -348,6 +332,10 @@ searchInput lift model =
         ]
 
 
+
+-- FIXME MobileAndBeyond applies .is-mobile all the time
+
+
 myColumnsModifiers : ColumnsModifiers
 myColumnsModifiers =
     { multiline = False
@@ -362,7 +350,7 @@ type alias Model =
     , lookupResults : WebData TextQueryData
     , selectedText : Maybe SelectedText
     , selectedTextList : List SelectedText
-    , isReadingExpanded : Bool
+    , subRoute : SubRoute
     }
 
 
@@ -371,7 +359,7 @@ initialModel =
     , lookupResults = RemoteData.NotAsked
     , selectedText = Nothing
     , selectedTextList = []
-    , isReadingExpanded = False
+    , subRoute = Searching
     }
 
 
@@ -437,6 +425,12 @@ type SelectedText
     | SelectedTranslatedText TranslatedText
 
 
+type SubRoute
+    = Searching
+    | Selecting
+    | Reading
+
+
 type Msg m
     = NoOp
     | AddToSelectedTexts SelectedText
@@ -444,7 +438,7 @@ type Msg m
     | SetTextLookupQuery String
     | TextQueryDataReceived (WebData TextQueryData)
     | SetSelectedReadText SelectedText
-    | ToggleExpandReading
+    | SetSubRoute SubRoute
 
 
 update : (Msg m -> m) -> Msg m -> Model -> ( Model, Cmd m )
@@ -458,9 +452,6 @@ update lift msg model =
 
         TextQueryDataReceived data ->
             ( { model | lookupResults = data }, Cmd.none )
-
-        ToggleExpandReading ->
-            ( { model | isReadingExpanded = not model.isReadingExpanded }, Cmd.none )
 
         AddToSelectedTexts selectedText ->
             let
@@ -498,6 +489,9 @@ update lift msg model =
 
         SetSelectedReadText t ->
             ( { model | selectedText = Just t }, Cmd.none )
+
+        SetSubRoute x ->
+            ( { model | subRoute = x }, Cmd.none )
 
 
 getUid t =
