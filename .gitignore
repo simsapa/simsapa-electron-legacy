@@ -6,8 +6,7 @@ TAGS
 **/auto/
 
 # local database
-development.sqlite3
-production.sqlite3
+appdata.sqlite3
 CHECKSUMS.md5
 
 # elm

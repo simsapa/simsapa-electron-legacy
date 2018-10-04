@@ -35,7 +35,6 @@ view lift model =
             ]
         ]
 
-
 menuItem itemText itemIcon itemRoute lift model =
     let
         isActive_ =

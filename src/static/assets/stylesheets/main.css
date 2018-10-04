@@ -10451,15 +10451,15 @@ html, body {
 .reading header p.suttaref {
   font-family: "Source Sans Pro SSP";
   font-weight: 300;
-  font-size: 1.5rem;
+  font-size: 1.2em;
   margin: 0;
 }
 
 .reading header h1 {
   font-family: "Abhaya Libre SSP";
   font-weight: 800;
-  font-size: 3.5rem;
-  margin-top: 0.75rem;
+  font-size: 2.8em;
+  margin-top: 0.2em;
 }
 
 .reading header h2 {
@@ -10477,6 +10477,18 @@ html, body {
   letter-spacing: 0.8px;
   word-spacing: 3px;
   margin-top: 3rem;
+}
+
+.is-mobile .reading {
+  font-size: 16px;
+}
+
+.is-mobile .reading.split-view {
+  font-size: 16px;
+}
+
+.is-mobile .reading header h1 {
+  font-size: 2.0em;
 }
 
 div.selected-text-list-tabs .tabs {

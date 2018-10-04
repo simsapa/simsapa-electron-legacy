@@ -352,7 +352,7 @@ myColumnsModifiers : ColumnsModifiers
 myColumnsModifiers =
     { multiline = False
     , gap = Gap1
-    , display = TabletAndBeyond
+    , display = MobileAndBeyond
     , centered = True
     }
 

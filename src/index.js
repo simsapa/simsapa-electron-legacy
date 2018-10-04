@@ -34,7 +34,7 @@ const sequelize = new Sequelize({
     //    idel: 10000
     //},
 
-    storage: path.join(__dirname, "development.sqlite3")
+    storage: path.join(__dirname, "appdata.sqlite3")
 });
 
 const db = require('./models');
