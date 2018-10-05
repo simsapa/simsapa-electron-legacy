@@ -10427,8 +10427,10 @@ html, body {
   line-height: 1.4;
 }
 
-.is-mobile .navbar-item img {
-  max-height: 32px;
+@media screen and (max-width: 1087px) {
+  .navbar-item img {
+    max-height: 32px;
+  }
 }
 
 .reading {
@@ -10485,16 +10487,16 @@ html, body {
   margin-top: 3rem;
 }
 
-.is-mobile .reading {
-  font-size: 16px;
-}
-
-.is-mobile .reading.split-view {
-  font-size: 16px;
-}
-
-.is-mobile .reading header h1 {
-  font-size: 2.0em;
+@media screen and (max-width: 1087px) {
+  .reading {
+    font-size: 16px;
+  }
+  .reading.split-view {
+    font-size: 16px;
+  }
+  .reading header h1 {
+    font-size: 2.0em;
+  }
 }
 
 div.selected-text-list-tabs .tabs {

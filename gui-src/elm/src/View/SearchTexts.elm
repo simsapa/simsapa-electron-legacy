@@ -47,6 +47,18 @@ view lift model topNav =
                 [ onClick (lift (SetSubRoute Reading)) ]
                 [ icon Standard [] [ i [ class "mdi mdi-book-open-variant" ] [] ] ]
             ]
+
+        selectedTextColumn =
+            case model.selectedText of
+                Nothing ->
+                    column cM [] []
+
+                Just _ ->
+                    column cM
+                        [ class "page-content-outer-reading-with-scroll" ]
+                        [ div [ class "page-content-inner-reading-with-scroll" ]
+                            [ readingHero div "split-view" lift model ]
+                        ]
     in
     case model.subRoute of
         Searching ->
@@ -74,11 +86,7 @@ view lift model topNav =
                             ]
                         ]
                     ]
-                , column cM
-                    [ class "page-content-outer-reading-with-scroll" ]
-                    [ div [ class "page-content-inner-reading-with-scroll" ]
-                        [ readingHero div "split-view" lift model ]
-                    ]
+                , selectedTextColumn
                 ]
             ]
 
@@ -226,6 +234,7 @@ viewRootTextRow lift root_text model =
         pinClass =
             if isSelected then
                 "mdi-pin"
+
             else
                 "mdi-pin-outline"
     in
@@ -245,7 +254,8 @@ viewRootTextRow lift root_text model =
                 ]
             , column cM
                 [ class "is-one-fifth"
-                , style "text-align" "right" ]
+                , style "text-align" "right"
+                ]
                 [ icon Standard [] [ i [ class ("mdi " ++ pinClass) ] [] ] ]
             ]
         , div [ style "padding-left" "1em" ] <|
@@ -279,6 +289,7 @@ viewTranslatedTextRow lift translated_text model =
         pinClass =
             if isSelected then
                 "mdi-pin"
+
             else
                 "mdi-pin-outline"
     in
@@ -300,7 +311,8 @@ viewTranslatedTextRow lift translated_text model =
                 ]
             , column cM
                 [ class "is-one-fifth"
-                , style "text-align" "right" ]
+                , style "text-align" "right"
+                ]
                 [ icon Standard [] [ i [ class ("mdi " ++ pinClass) ] [] ] ]
             ]
         , div [ style "padding-left" "1em" ] <|
@@ -389,10 +401,6 @@ searchInput lift model =
             myInputAttrs
             []
         ]
-
-
-
--- FIXME MobileAndBeyond applies .is-mobile all the time
 
 
 myColumnsModifiers : ColumnsModifiers

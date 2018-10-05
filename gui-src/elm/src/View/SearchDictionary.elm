@@ -44,9 +44,7 @@ view lift model topNav =
                 [ onClick (lift (SetSubRoute Reading)) ]
                 [ icon Standard [] [ i [ class "mdi mdi-book-open-variant" ] [] ] ]
             ]
-
     in
-
     case model.subRoute of
         Searching ->
             [ columns myColumnsModifiers
@@ -61,7 +59,6 @@ view lift model topNav =
                         ]
                     ]
                 ]
-
             , columns myColumnsModifiers
                 [ class "page-wrap-with-scroll is-hidden-touch" ]
                 [ column cM
@@ -81,7 +78,8 @@ view lift model topNav =
                     [ div
                         [ class "page-content-inner-controls-with-scroll" ]
                         [ div [ class "dictionary-results" ]
-                              (List.map (\x -> viewSelectedResultRow x lift model) model.selectedWordsList) ]
+                            (List.map (\x -> viewSelectedResultRow x lift model) model.selectedWordsList)
+                        ]
                     ]
                 ]
             ]
@@ -190,22 +188,49 @@ viewLookupResultRow dictWord lift model =
 
             else
                 String.join " " words
+
+        isSelected =
+            let
+                wordList =
+                    List.filter
+                        (\x -> x.word == dictWord.word && x.entry_source == dictWord.entry_source)
+                        model.selectedWordsList
+            in
+            List.length wordList > 0
+
+        pinClass =
+            if isSelected then
+                "mdi-pin"
+
+            else
+                "mdi-pin-outline"
     in
     div
         [ class "hover-gray"
         , style "padding" "0.5em"
         , onClick (lift (AddToSelectedResults dictWord))
         ]
-        [ div []
-              [ span [ style "font-weight" "bold" ]
+        [ columns { cSM | display = MobileAndBeyond }
+            []
+            [ column cM
+                []
+                [ span [ style "font-weight" "bold" ]
                     [ text dictWord.word ]
-              , span [ style "padding" "0 1em" ] [ text "∙" ]
-              , span []
-                  [ text dictWord.entry_source ] ]
-
-        , columns cSM []
-            [ column cM [ class "is-full" ]
-                  [ div [] <| Markdown.toHtml Nothing snippet ]
+                , span [ style "padding" "0 1em" ] [ text "∙" ]
+                , span []
+                    [ text dictWord.entry_source ]
+                ]
+            , column cM
+                [ class "is-one-fifth"
+                , style "text-align" "right"
+                ]
+                [ icon Standard [] [ i [ class ("mdi " ++ pinClass) ] [] ] ]
+            ]
+        , columns cSM
+            []
+            [ column cM
+                [ class "is-full" ]
+                [ div [] <| Markdown.toHtml Nothing snippet ]
             ]
         ]
 
@@ -271,6 +296,7 @@ type alias DictWord =
     , to_lang : String
     }
 
+
 type SubRoute
     = Searching
     | Reading
@@ -328,14 +354,14 @@ update lift msg model =
             in
             ( m, Cmd.none )
 
+        -- focus back on the input field
+        -- FIXME Task.attempt (\_ -> NoOp) <| Dom.focus "query-input"
+
         AddToDictInput letter ->
-            ( { model | lookupQuery = model.lookupQuery ++ letter }
-            , Cmd.batch
-                [ fetchDictWord lift model.lookupQuery
-                , -- FIXME Task.attempt (\_ -> NoOp) <| Dom.focus "query-input"
-                  Cmd.none
-                ]
-            )
+            let
+                q = model.lookupQuery ++ letter
+            in
+            ( { model | lookupQuery = q }, fetchDictWord lift q )
 
         SetSubRoute x ->
             ( { model | subRoute = x }, Cmd.none )

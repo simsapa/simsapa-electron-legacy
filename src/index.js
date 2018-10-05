@@ -82,7 +82,8 @@ const createWindow = () => {
             .then(() => {
                 const items_sql = `
 SELECT * FROM dict_words
-WHERE word LIKE :query;`;
+WHERE word LIKE :query;
+`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
@@ -160,7 +161,8 @@ SELECT root_texts.*
 FROM root_texts
 WHERE acronym LIKE :q_acronym OR title LIKE :q_title
 ORDER BY acronym ASC
-LIMIT 20;`;
+LIMIT 20;
+`;
                 sequelize.query(items_sql, {
                     replacements: {
                         q_acronym: query + "%",
@@ -196,7 +198,8 @@ FROM fts_root_texts
 INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
 WHERE fts_root_texts MATCH :search_content
 ORDER BY rank
-LIMIT 20;`;
+LIMIT 20;
+`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
@@ -223,7 +226,8 @@ SELECT translated_texts.*
 FROM translated_texts
 WHERE acronym LIKE :q_acronym OR title LIKE :q_title
 ORDER BY acronym ASC
-LIMIT 20;`;
+LIMIT 20;
+`;
 
                 return sequelize.query(items_sql, {
                     replacements: {
@@ -263,7 +267,8 @@ FROM fts_translated_texts
 INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
 WHERE fts_translated_texts MATCH :search_content
 ORDER BY rank
-LIMIT 20;`;
+LIMIT 20;
+`;
 
                 return sequelize.query(items_sql, {
                     replacements: {

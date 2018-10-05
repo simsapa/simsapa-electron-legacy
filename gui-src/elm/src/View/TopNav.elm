@@ -9,6 +9,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Route exposing (Route)
 
+-- NOTE: transparent doesn't seem to work, using custom css instead
+-- { navbarModifiers | transparent = True }
 
 view : (Msg m -> m) -> Model -> Maybe (List (Html m)) -> Html m
 view lift model buttons =
@@ -22,7 +24,7 @@ view lift model buttons =
                     x
     in
     navbar navbarModifiers
-        []
+        [ class "is-fixed-top" ]
         [ navbarBrand []
             (navbarBurger model.isMenuOpen
                 [ onClick (lift ToggleMenu)
