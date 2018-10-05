@@ -10377,6 +10377,18 @@ html, body {
   background-color: #FDF6E3;
 }
 
+.page-content-outer-reading-with-scroll .navbar {
+  background-color: #FDF6E3;
+}
+
+.page-content-outer-reading-with-scroll .navbar .button:not(.is-primary) {
+  background-color: #FDF6E3;
+}
+
+.page-content-outer-reading-with-scroll .navbar-menu {
+  background-color: #FDF6E3;
+}
+
 .page-content-inner-controls-with-scroll,
 .page-content-inner-reading-with-scroll {
   padding: 0;

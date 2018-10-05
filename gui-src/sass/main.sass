@@ -40,8 +40,12 @@ html, body
 
 .page-content-outer-reading-with-scroll
   background-color: $solarized-light-bg
-  //background-image: url('/assets/images/ricepaper_v3.png')
-  //background-repeat: repeat
+  & .navbar
+    background-color: $solarized-light-bg
+    & .button:not(.is-primary)
+      background-color: $solarized-light-bg
+  & .navbar-menu
+    background-color: $solarized-light-bg
 
 .page-content-inner-controls-with-scroll,
 .page-content-inner-reading-with-scroll

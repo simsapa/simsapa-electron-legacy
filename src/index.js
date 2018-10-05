@@ -298,7 +298,8 @@ LIMIT 20;`;
         slashes: true
     }));
 
-    mainWindow.setMenuBarVisibility(true);
+    // This doesn't show up in production builds anyway.
+    //mainWindow.setMenuBarVisibility(true);
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {

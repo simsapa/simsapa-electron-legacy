@@ -51,9 +51,20 @@ view lift model topNav =
     case model.subRoute of
         Searching ->
             [ columns myColumnsModifiers
-                [ class "page-wrap-with-scroll" ]
+                [ class "page-wrap-with-scroll is-hidden-desktop" ]
                 [ column cM
                     [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , searchInput lift model
+                        , viewLookupResults lift model
+                        ]
+                    ]
+                ]
+            , columns myColumnsModifiers
+                [ class "page-wrap-with-scroll is-hidden-touch" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll is-half" ]
                     [ div [ class "page-content-inner-controls-with-scroll" ]
                         [ topNav (Just buttons)
                         , BL.section Spaced
@@ -62,6 +73,11 @@ view lift model topNav =
                             , viewLookupResults lift model
                             ]
                         ]
+                    ]
+                , column cM
+                    [ class "page-content-outer-reading-with-scroll" ]
+                    [ div [ class "page-content-inner-reading-with-scroll" ]
+                        [ readingHero div "split-view" lift model ]
                     ]
                 ]
             ]
@@ -73,7 +89,7 @@ view lift model topNav =
                     [ class "page-content-outer-reading-with-scroll" ]
                     [ div [ class "page-content-inner-reading-with-scroll" ]
                         [ topNav (Just buttons)
-                        , readingHero lift model
+                        , readingHero container "" lift model
                         ]
                     ]
                 ]
@@ -94,7 +110,7 @@ view lift model topNav =
             ]
 
 
-readingHero lift model =
+readingHero containerItem extraClasses lift model =
     let
         contentHeading =
             [ viewSelectedTextHeader lift model ]
@@ -103,8 +119,8 @@ readingHero lift model =
             [ viewSelectedTextBody lift model ]
     in
     div []
-        [ container
-            [ class "reading" ]
+        [ containerItem
+            [ class (String.join " " [ "reading", extraClasses ]) ]
             [ hero { bold = False, size = Medium, color = Default }
                 []
                 [ heroBody [] contentHeading ]
@@ -196,21 +212,43 @@ viewRootTextRow lift root_text model =
 
             else
                 String.join " " words
+
+        isSelected =
+            let
+                t_uid =
+                    root_text.uid
+
+                textList =
+                    List.map (\x -> getUid x) model.selectedTextList
+            in
+            List.member t_uid textList
+
+        pinClass =
+            if isSelected then
+                "mdi-pin"
+            else
+                "mdi-pin-outline"
     in
-    Html.div
+    div
         [ class "hover-gray"
         , style "padding" "0.5em"
         , onClick (lift (AddToSelectedTexts (SelectedRootText root_text)))
         ]
-        [ Html.div
-            [ style "font-weight" "bold" ]
-            [ text root_text.acronym ]
-        , Html.div
-            [ style "font-weight" "bold" ]
-            [ text root_text.title ]
-        , Html.div
-            [ style "padding-left" "1em" ]
-          <|
+        [ columns { cSM | display = MobileAndBeyond }
+            []
+            [ column cM
+                []
+                [ div [ style "font-weight" "bold" ]
+                    [ text root_text.acronym ]
+                , div [ style "font-weight" "bold" ]
+                    [ text root_text.title ]
+                ]
+            , column cM
+                [ class "is-one-fifth"
+                , style "text-align" "right" ]
+                [ icon Standard [] [ i [ class ("mdi " ++ pinClass) ] [] ] ]
+            ]
+        , div [ style "padding-left" "1em" ] <|
             Markdown.toHtml Nothing snippet
         ]
 
@@ -227,24 +265,45 @@ viewTranslatedTextRow lift translated_text model =
 
             else
                 String.join " " words
+
+        isSelected =
+            let
+                t_uid =
+                    translated_text.uid
+
+                textList =
+                    List.map (\x -> getUid x) model.selectedTextList
+            in
+            List.member t_uid textList
+
+        pinClass =
+            if isSelected then
+                "mdi-pin"
+            else
+                "mdi-pin-outline"
     in
-    Html.div
+    div
         [ class "hover-gray"
         , style "padding" "0.5em"
         , onClick (lift (AddToSelectedTexts (SelectedTranslatedText translated_text)))
         ]
-        [ Html.div
-            [ style "font-weight" "bold" ]
-            [ text translated_text.acronym ]
-        , Html.div
-            [ style "font-weight" "bold" ]
-            [ text translated_text.title ]
-        , Html.div
-            [ style "font-style" "italic" ]
-            [ text translated_text.author_uid ]
-        , Html.div
-            [ style "padding-left" "1em" ]
-          <|
+        [ columns { cSM | display = MobileAndBeyond }
+            []
+            [ column cM
+                []
+                [ div [ style "font-weight" "bold" ]
+                    [ text translated_text.acronym ]
+                , div [ style "font-weight" "bold" ]
+                    [ text translated_text.title ]
+                , div [ style "font-style" "italic" ]
+                    [ text translated_text.author_uid ]
+                ]
+            , column cM
+                [ class "is-one-fifth"
+                , style "text-align" "right" ]
+                [ icon Standard [] [ i [ class ("mdi " ++ pinClass) ] [] ] ]
+            ]
+        , div [ style "padding-left" "1em" ] <|
             Markdown.toHtml Nothing snippet
         ]
 
@@ -448,7 +507,15 @@ update lift msg model =
             ( model, Cmd.none )
 
         SetTextLookupQuery query ->
-            ( { model | lookupQuery = query }, fetchTextQuery lift query )
+            let
+                lookupCmd =
+                    if String.length query > 2 then
+                        fetchTextQuery lift query
+
+                    else
+                        Cmd.none
+            in
+            ( { model | lookupQuery = query }, lookupCmd )
 
         TextQueryDataReceived data ->
             ( { model | lookupResults = data }, Cmd.none )

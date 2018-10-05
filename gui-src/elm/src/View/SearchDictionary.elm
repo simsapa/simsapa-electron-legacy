@@ -28,30 +28,77 @@ cSM =
 
 view : (Msg m -> m) -> Model -> (Maybe (List (Html m)) -> Html m) -> List (Html m)
 view lift model topNav =
-    [ columns myColumnsModifiers
-        [ class "page-wrap-with-scroll" ]
-        [ column cM
-            [ class "page-content-outer-controls-with-scroll" ]
-            [ div [ class "page-content-inner-controls-with-scroll" ]
-                [ topNav Nothing
-                , BL.section Spaced
-                    []
-                    [ searchInput lift model
-                    , allPaliLetterButtons lift model
-                    , viewLookupResults lift model
+    let
+        bM route =
+            if model.subRoute == route then
+                { buttonModifiers | color = Primary }
+
+            else
+                buttonModifiers
+
+        buttons =
+            [ BE.button (bM Searching)
+                [ onClick (lift (SetSubRoute Searching)) ]
+                [ icon Standard [] [ i [ class "mdi mdi-magnify" ] [] ] ]
+            , BE.button (bM Reading)
+                [ onClick (lift (SetSubRoute Reading)) ]
+                [ icon Standard [] [ i [ class "mdi mdi-book-open-variant" ] [] ] ]
+            ]
+
+    in
+
+    case model.subRoute of
+        Searching ->
+            [ columns myColumnsModifiers
+                [ class "page-wrap-with-scroll is-hidden-desktop" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , searchInput lift model
+                        , allPaliLetterButtons lift model
+                        , viewLookupResults lift model
+                        ]
+                    ]
+                ]
+
+            , columns myColumnsModifiers
+                [ class "page-wrap-with-scroll is-hidden-touch" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , BL.section Spaced
+                            []
+                            [ searchInput lift model
+                            , allPaliLetterButtons lift model
+                            , viewLookupResults lift model
+                            ]
+                        ]
+                    ]
+                , column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div
+                        [ class "page-content-inner-controls-with-scroll" ]
+                        [ div [ class "dictionary-results" ]
+                              (List.map (\x -> viewSelectedResultRow x lift model) model.selectedWordsList) ]
                     ]
                 ]
             ]
-        , column cM
-            [ class "page-content-outer-controls-with-scroll" ]
-            [ div
-                [ class "page-content-inner-controls-with-scroll"
-                , style "padding" "10px"
+
+        Reading ->
+            [ columns myColumnsModifiers
+                [ class "page-wrap-with-scroll" ]
+                [ column cM
+                    [ class "page-content-outer-controls-with-scroll" ]
+                    [ div [ class "page-content-inner-controls-with-scroll" ]
+                        [ topNav (Just buttons)
+                        , div [ class "dictionary-results" ]
+                            (List.map (\x -> viewSelectedResultRow x lift model) model.selectedWordsList)
+                        ]
+                    ]
                 ]
-                [ div [] (List.map (\x -> viewSelectedResultRow x lift model) model.selectedWordsList) ]
             ]
-        ]
-    ]
 
 
 searchInput : (Msg m -> m) -> Model -> Html m
@@ -144,29 +191,21 @@ viewLookupResultRow dictWord lift model =
             else
                 String.join " " words
     in
-    columns myColumnsModifiers
+    div
         [ class "hover-gray"
         , style "padding" "0.5em"
         , onClick (lift (AddToSelectedResults dictWord))
         ]
-        [ column cM
-            [ class "is-one-fifth" ]
-            [ div
-                [ style "font-weight" "bold" ]
-                [ text dictWord.word ]
-            ]
-        , column cM
-            []
-            [ div
-                [ style "padding-left" "1em" ]
-              <|
-                Markdown.toHtml Nothing snippet
-            ]
-        , column cM
-            [ class "is-one-fifth" ]
-            [ div
-                []
-                [ text dictWord.entry_source ]
+        [ div []
+              [ span [ style "font-weight" "bold" ]
+                    [ text dictWord.word ]
+              , span [ style "padding" "0 1em" ] [ text "∙" ]
+              , span []
+                  [ text dictWord.entry_source ] ]
+
+        , columns cSM []
+            [ column cM [ class "is-full" ]
+                  [ div [] <| Markdown.toHtml Nothing snippet ]
             ]
         ]
 
@@ -199,7 +238,7 @@ myColumnsModifiers : ColumnsModifiers
 myColumnsModifiers =
     { multiline = False
     , gap = Gap1
-    , display = TabletAndBeyond
+    , display = MobileAndBeyond
     , centered = True
     }
 
@@ -208,6 +247,7 @@ type alias Model =
     { lookupQuery : String
     , lookupResults : WebData (List DictWord)
     , selectedWordsList : List DictWord
+    , subRoute : SubRoute
     }
 
 
@@ -215,6 +255,7 @@ initialModel =
     { lookupQuery = ""
     , lookupResults = RemoteData.NotAsked
     , selectedWordsList = []
+    , subRoute = Searching
     }
 
 
@@ -230,6 +271,10 @@ type alias DictWord =
     , to_lang : String
     }
 
+type SubRoute
+    = Searching
+    | Reading
+
 
 type Msg m
     = NoOp
@@ -238,6 +283,7 @@ type Msg m
     | AddToSelectedResults DictWord
     | RemoveFromSelectedResults DictWord
     | AddToDictInput String
+    | SetSubRoute SubRoute
 
 
 update : (Msg m -> m) -> Msg m -> Model -> ( Model, Cmd m )
@@ -249,7 +295,7 @@ update lift msg model =
         SetDictLookupQuery query ->
             let
                 lookupCmd =
-                    if String.length query > 1 then
+                    if String.length query > 2 then
                         fetchDictWord lift query
 
                     else
@@ -290,6 +336,9 @@ update lift msg model =
                   Cmd.none
                 ]
             )
+
+        SetSubRoute x ->
+            ( { model | subRoute = x }, Cmd.none )
 
 
 dictWordDecoder : Decoder DictWord
