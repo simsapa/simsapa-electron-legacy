@@ -10,7 +10,7 @@
         "make": "electron-forge make",
         "publish": "electron-forge publish",
         "lint": "eslint src --color",
-        "fetch-assets": "wget http://ssp.a-buddha-ujja.org/v0.1.0/appdata.tar.bz2 -O ./appdata.tar.bz2 --quiet && 7z x ./appdata.tar.bz2 -o ./src && del ./appdata.tar.bz2",
+        "fetch-assets": "wget http://ssp.a-buddha-ujja.org/v0.1.0/appdata.tar.bz2 -O ./appdata.tar.bz2 --quiet && 7z x ./appdata.tar.bz2 && mv appdata.sqlite3 ./src && del ./appdata.tar.bz2",
         "sass-build": "npm run sass-build-clean && npm run sass-build-sass && npm run sass-build-autoprefix",
         "sass-build-autoprefix": "postcss --use autoprefixer --map false --output ./src/static/assets/stylesheets/main.css ./src/static/assets/stylesheets/main.css",
         "sass-build-cleancss": "cleancss -o ./src/static/assets/stylesheets/main.min.css ./src/static/assets/stylesheets/main.css",
