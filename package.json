@@ -41,7 +41,7 @@
             },
             "electronPackagerConfig": {
                 "packageManager": "yarn",
-                "icon": "./src/static/assets/icons/logo-letter-w1024",
+                "icon": "./src/icons/logo-letter-w1024",
                 "ignore": [
                     "gui-src"
                 ]
@@ -51,12 +51,12 @@
                 "owner": "Simsapa",
                 "title": "Simsapa Dhamma Reader",
                 "authors": "Simsapa",
-                "iconUrl": "https://raw.githubusercontent.com/simsapa/simsapa/develop/src/static/assets/icons/logo-letter-w1024.ico",
-                "setupIcon": "./src/static/assets/icons/logo-letter-w1024.ico"
+                "iconUrl": "https://raw.githubusercontent.com/simsapa/simsapa/develop/src/icons/logo-letter-w1024.ico",
+                "setupIcon": "./src/icons/logo-letter-w1024.ico"
             },
             "electronInstallerDebian": {
                 "productName": "Simsapa Dhamma Reader",
-                "icon": "./src/static/assets/icons/logo-letter-w1024.png",
+                "icon": "./src/icons/logo-letter-w1024.png",
                 "categories": [
                     "Utility"
                 ],
@@ -67,7 +67,7 @@
             "electronInstallerDMG": {
                 "name": "SimsapaDhammaReader",
                 "title": "Simsapa Dhamma Reader",
-                "icon": "./src/static/assets/icons/logo-letter-w1024.icns",
+                "icon": "./src/icons/logo-letter-w1024.icns",
                 "background-color": "#f2f2f2"
             },
             "electronInstallerRedhat": {},
@@ -82,10 +82,12 @@
         }
     },
     "dependencies": {
+        "bizzy": "^3.0.0",
         "body-parser": "^1.18.3",
         "electron-compile": "^6.4.3",
         "electron-squirrel-startup": "^1.0.0",
         "express": "^4.16.3",
+        "md5-file": "^4.0.0",
         "request-progress": "^3.0.0",
         "sequelize": "^4.38.1",
         "sequelize-cli": "^4.1.1",
@@ -98,7 +100,7 @@
         "babel-preset-react": "^6.24.1",
         "clean-css-cli": "^4.2.1",
         "electron-forge": "^5.2.2",
-        "electron-prebuilt-compile": "^3.0.0",
+        "electron-prebuilt-compile": "3.0.2",
         "eslint": "^3",
         "eslint-config-airbnb": "^15",
         "eslint-plugin-import": "^2",

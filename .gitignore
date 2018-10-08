@@ -5,6 +5,8 @@ TAGS
 *.log
 **/auto/
 
+# local static assets
+src/static/
 # local database
 appdata.sqlite3
 CHECKSUMS.md5

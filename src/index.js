@@ -5,10 +5,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
     app.quit();
 }
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
@@ -18,29 +17,56 @@ const bodyParser = require('body-parser');
 const express_app = express();
 
 const Sequelize = require("sequelize");
-const sequelize = new Sequelize({
-    dialect: "sqlite",
 
-    define: {
-        timestamps: false // true by default
-    },
+let assetsReady = false;
 
-    //operatorsAliases: false,
+const dbPath = path.join(__dirname, "appdata.sqlite3");
+const assetsPath = path.join(__dirname, "static");
 
-    //pool: {
-    //    max: 5,
-    //    min: 0,
-    //    acquire: 30000,
-    //    idel: 10000
-    //},
+if (fs.existsSync(dbPath) && fs.existsSync(path.join(assetsPath, "index.html"))) {
+    assetsReady = true;
+}
 
-    storage: path.join(__dirname, "appdata.sqlite3")
-});
+const createWindowWithoutAssets = () => {
 
-const db = require('./models');
-const Op = Sequelize.Op;
+    mainWindow = new BrowserWindow({
+        width: 1920,
+        height: 1080,
+        icon: path.join(__dirname, "icons", "logo-letter-w64.png")
+    });
 
-const createWindow = () => {
+    mainWindow.loadFile(path.join(__dirname, "sections", "downloadAssets.html"));
+
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+    });
+
+};
+
+const createWindowWithAssets = () => {
+
+    const sequelize = new Sequelize({
+        dialect: "sqlite",
+
+        define: {
+            timestamps: false // true by default
+        },
+
+        //operatorsAliases: false,
+
+        //pool: {
+        //    max: 5,
+        //    min: 0,
+        //    acquire: 30000,
+        //    idel: 10000
+        //},
+
+        storage: dbPath,
+    });
+
+    const db = require('./models');
+    const Op = Sequelize.Op;
+
 
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -318,7 +344,12 @@ LIMIT 20;
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+
+if (assetsReady) {
+    app.on('ready', createWindowWithAssets);
+} else {
+    app.on('ready', createWindowWithoutAssets);
+}
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -333,7 +364,11 @@ app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
-        createWindow();
+        if (assetsReady) {
+            createWindowWithAssets();
+        } else {
+            createWindowWithoutAssets();
+        }
     }
 });
 
@@ -351,3 +386,6 @@ function escape_string_for_fts(query) {
         .replace(/'/g, "''")
         .replace(/[^A-Za-z0-9" ]/gi, '"$&"');
 }
+
+require(path.join(__dirname, "main-process", "downloadAssets.js"));
+

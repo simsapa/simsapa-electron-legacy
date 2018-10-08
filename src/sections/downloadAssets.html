@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Simsapa - Download Assets</title>
+    </head>
+    <body>
+        <h1>Download Assets</h1>
+
+        <p><button id="download-database">Download Database</button></p>
+        <p id="database-info"></p>
+        <p id="database-error"></p>
+
+        <p><button id="download-assets">Download Assets</button></p>
+        <p id="assets-info"></p>
+        <p id="assets-error"></p>
+
+        <script>
+         require('../renderer-process/downloadAssets.js')
+        </script>
+    </body>
+</html>
