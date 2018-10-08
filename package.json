@@ -9,14 +9,7 @@
         "package": "electron-forge package",
         "make": "electron-forge make",
         "publish": "electron-forge publish",
-        "lint": "eslint src --color",
-        "fetch-assets": "wget http://ssp.a-buddha-ujja.org/v0.1.0/appdata.tar.bz2 -O appdata.tar.bz2 --quiet && 7z e appdata.tar.bz2 && 7z e appdata.tar -osrc && del appdata.tar.bz2 && del appdata.tar",
-        "sass-build": "npm run sass-build-clean && npm run sass-build-sass && npm run sass-build-autoprefix",
-        "sass-build-autoprefix": "postcss --use autoprefixer --map false --output ./src/static/assets/stylesheets/main.css ./src/static/assets/stylesheets/main.css",
-        "sass-build-cleancss": "cleancss -o ./src/static/assets/stylesheets/main.min.css ./src/static/assets/stylesheets/main.css",
-        "sass-build-clean": "rimraf ./src/static/assets/stylesheets",
-        "sass-build-sass": "node-sass --output-style expanded --source-map true ./gui-src/sass/main.sass ./src/static/assets/stylesheets/main.css",
-        "sass-start": "npm run sass-build-sass -- --watch"
+        "lint": "eslint src --color"
     },
     "repository": "https://github.com/simsapa/simsapa",
     "keywords": [
@@ -94,20 +87,15 @@
         "sqlite3": "^4.0.2"
     },
     "devDependencies": {
-        "autoprefixer": "^9.1.5",
         "babel-plugin-transform-async-to-generator": "^6.24.1",
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
-        "clean-css-cli": "^4.2.1",
         "electron-forge": "^5.2.2",
         "electron-prebuilt-compile": "3.0.2",
         "eslint": "^3",
         "eslint-config-airbnb": "^15",
         "eslint-plugin-import": "^2",
         "eslint-plugin-jsx-a11y": "^5",
-        "eslint-plugin-react": "^7",
-        "node-sass": "^4.9.3",
-        "postcss-cli": "^6.0.0",
-        "rimraf": "^2.6.2"
+        "eslint-plugin-react": "^7"
     }
 }

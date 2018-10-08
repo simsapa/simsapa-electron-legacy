@@ -9,12 +9,6 @@ TAGS
 src/static/
 # local database
 appdata.sqlite3
-CHECKSUMS.md5
-
-# elm
-gui-src/elm/repl-temp-*
-gui-src/elm/elm-stuff/
-gui-src/elm/node_modules/
 
 # electron
 node_modules/
