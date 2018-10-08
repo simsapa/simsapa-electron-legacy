@@ -6,7 +6,9 @@ TAGS
 **/auto/
 
 # local static assets
-src/static/
+# no trailing slash to match symlink too
+src/static
+
 # local database
 appdata.sqlite3
 
