@@ -23,7 +23,7 @@ let assetsReady = false;
 const dbPath = path.join(__dirname, "appdata.sqlite3");
 const assetsPath = path.join(__dirname, "static");
 
-if (fs.existsSync(dbPath) && fs.existsSync(path.join(assetsPath, "index.html"))) {
+if (fs.existsSync(dbPath) && fs.existsSync(path.join(assetsPath, "index-desktop.html"))) {
     assetsReady = true;
 }
 
@@ -134,7 +134,7 @@ WHERE word LIKE :query;
 SELECT
     dict_words.id,
     dict_words.word,
-    snippet(fts_dict_words, 1, '<b>', '</b>', ' ... ', 64) AS definition_plain,
+    snippet(fts_dict_words, 1, '<b class="highlight">', '</b>', ' ... ', 64) AS definition_plain,
     dict_words.definition_html,
     dict_words.summary,
     dict_words.grammar,
@@ -218,7 +218,7 @@ SELECT
     root_texts.volpage,
     root_texts.title,
     root_texts.content_language,
-    snippet(fts_root_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    snippet(fts_root_texts, 0, '<b class="highlight">', '</b>', ' ... ', 64) AS content_plain,
     root_texts.content_html
 FROM fts_root_texts
 INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
@@ -287,7 +287,7 @@ SELECT
     translated_texts.title,
     translated_texts.root_title,
     translated_texts.content_language,
-    snippet(fts_translated_texts, 0, '<b>', '</b>', ' ... ', 64) AS content_plain,
+    snippet(fts_translated_texts, 0, '<b class="highlight">', '</b>', ' ... ', 64) AS content_plain,
     translated_texts.content_html
 FROM fts_translated_texts
 INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
@@ -325,7 +325,7 @@ LIMIT 20;
         protocol: "http",
         hostname: "localhost",
         port: 3030,
-        pathname: "/",
+        pathname: "/index-desktop.html",
         slashes: true
     }));
 
