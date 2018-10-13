@@ -1,4 +1,4 @@
-// downloadAssets.js
+// downloadAssets.js: Render Process
 
 const {ipcRenderer} = require('electron');
 
