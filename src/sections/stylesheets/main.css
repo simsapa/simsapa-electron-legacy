@@ -1,0 +1,47 @@
+@import "./bulma.css";
+
+@font-face {
+    font-family: 'Abhaya Libre SSP';
+    font-style: normal;
+    font-weight: 800;
+    src: url("../fonts/AbhayaLibreX-ExtraBold.ttf") format("truetype");
+}
+
+html, body {
+    overflow: hidden;
+}
+
+.hero {
+    padding-bottom: 10em;
+}
+
+.hero-body {
+    max-width: 50em;
+    margin: auto;
+}
+
+h1.title {
+    font-family: 'Abhaya Libre SSP';
+    font-weight: 800;
+    font-size: 40px;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+}
+
+h2.subtitle {
+    padding-bottom: 1em;
+}
+
+figure.image {
+    margin: auto;
+}
+
+.info-wrap {
+    padding-bottom: 2em;
+}
+
+.button-wrap {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
