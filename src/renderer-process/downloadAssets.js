@@ -106,4 +106,14 @@ ipcRenderer.on('show-restart', () => {
         });
 });
 
+ipcRenderer.on('status-clear', (event) => {
+    document.getElementById('status-wrap').innerHTML = "";
+});
 
+ipcRenderer.on('status-error', (event, msg) => {
+    let content = `
+<div class="level">
+    <div class="level-item">${msg}</div>
+</div>`;
+    document.getElementById('status-wrap').innerHTML = content;
+});

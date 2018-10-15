@@ -4,27 +4,37 @@ const fs = require('fs');
 const path = require('path');
 const rp = require('request-promise');
 
-const versionUrl = "http://ssp.a-buddha-ujja.org/version.json";
-const versionPath = path.join(__dirname, "version.json");
+const remoteVersionUrl = "http://ssp.a-buddha-ujja.org/version.json";
+const localVersionPath = path.join(__dirname, "local-version.json");
+const remoteVersionPath = path.join(__dirname, "remote-version.json");
 
-export const localVersion = JSON.parse(fs.readFileSync(versionPath));
+export let connectionError;
+export let localVersion;
+export let remoteVersion;
 
-export async function getRemoteVersion() {
-    let o = { method: "GET", url: versionUrl };
-
-    await rp(o)
-        .then((body) => {
-            return JSON.parse(body);
-        })
-        .catch((err) => {
-            return err;
-        });
+if (fs.existsSync(localVersionPath)) {
+    localVersion = JSON.parse(fs.readFileSync(localVersionPath));
 }
 
-/*
-version.getRemoteVersion()
-    .then((data) => { remoteVersion = data; })
-    .catch((err) => { console.log('Error: ' + err); });
-*/
+export function saveRemoteVersion() {
+    return new Promise((resolve, reject) => {
+        let o = { method: "GET", url: remoteVersionUrl };
 
+        rp(o)
+            .then((data) => {
+                remoteVersion = JSON.parse(data);
+                fs.writeFileSync(remoteVersionPath, data);
+                resolve(remoteVersion);
+            })
+            .catch((err) => {
+                connectionError = true;
+                reject(err);
+            });
+    });
+}
+
+export function copyRemoteToLocal() {
+    // TODO
+    console.log("copyRemoteToLocal()");
+}
 

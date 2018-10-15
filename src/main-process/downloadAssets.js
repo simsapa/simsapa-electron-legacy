@@ -14,57 +14,77 @@ const version = require('../version');
 let downloading = false;
 
 ipcMain.on('download', (event) => {
-    if (downloading === true) {
-        return;
-    }
-
-    downloading = true;
-
-    var all_opts = [
-        {
-            event: event,
-            msgId: 'assets',
-            assetVersion: version.localVersion.assets_tar,
-        },
-        {
-            event: event,
-            msgId: 'database',
-            assetVersion: version.localVersion.appdata_tar,
-        },
-    ];
-
-    var processAsset = function(opts) {
-        return new Promise((resolve, reject) => {
-            downloadAssetTarball(opts)
-                .then(() => { return md5CheckTar(opts); })
-                .then(() => { resolve(extractAsset(opts)); })
-                .catch((err) => {
-                    opts.event.sender.send(`${opts.msgId}-error`, err);
-                    reject(false);
-                });
-        });
-    };
-
-    var actions = all_opts.map(processAsset);
-
-    var results = Promise.all(actions);
-
-    results
-        .then(() => {
-            downloading = false;
-            event.sender.send("show-restart");
-        })
-        .catch((err) => {
-            console.log(err);
-            throw err;
-        });
-
+    version.saveRemoteVersion()
+        .then(() => doDownload(event))
+        .then(() => version.copyRemoteToLocal(),
+              (err) => console.log(err))
+        .catch((err) => showConnectionError(event, err));
 });
 
 ipcMain.on('restart', (event) => {
     app.relaunch();
     app.quit();
 });
+
+function doDownload(event) {
+    return new Promise((top_resolve, top_reject) => {
+        if (downloading === true) {
+            return;
+        }
+
+        downloading = true;
+        event.sender.send("status-clear");
+
+        var all_opts = [
+            {
+                event: event,
+                msgId: 'assets',
+                assetVersion: version.remoteVersion.assets_tar,
+            },
+            {
+                event: event,
+                msgId: 'database',
+                assetVersion: version.remoteVersion.appdata_tar,
+            },
+        ];
+
+        var processAsset = function(opts) {
+            return new Promise((resolve, reject) => {
+                downloadAssetTarball(opts)
+                    .then(() => { resolve(md5CheckTar(opts)); })
+                    .then(() => { resolve(extractAsset(opts)); })
+                    .catch((err) => {
+                        console.log(err);
+                        let msg = "There was an error in the download request.";
+                        opts.event.sender.send(`${opts.msgId}-error`, msg);
+                        reject(false);
+                    });
+            });
+        };
+
+        var actions = all_opts.map(processAsset);
+
+        var results = Promise.all(actions);
+
+        results
+            .then(() => {
+                downloading = false;
+                event.sender.send("show-restart");
+                top_resolve(true);
+            })
+            .catch((err) => {
+                top_reject(err);
+            });
+    });
+}
+
+function showConnectionError(event, err) {
+    let msg = "There was a connection error.";
+    if (err.name == "RequestError") {
+        msg += " Connection to remote server failed.";
+    }
+    event.sender.send("status-error", msg);
+}
 
 function downloadAssetTarball(opts) {
     return new Promise((resolve, reject) => {

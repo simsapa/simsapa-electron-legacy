@@ -5,9 +5,13 @@ TAGS
 *.log
 **/auto/
 
+src/local-version.json
+src/remote-version.json
+
 # local static assets
 # no trailing slash to match symlink too
 src/static
+*.tar.bz2
 
 # local database
 appdata.sqlite3
