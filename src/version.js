@@ -34,7 +34,8 @@ export function saveRemoteVersion() {
 }
 
 export function copyRemoteToLocal() {
-    // TODO
-    console.log("copyRemoteToLocal()");
+    if (fs.existsSync(remoteVersionPath)) {
+        fs.copyFileSync(remoteVersionPath, localVersionPath);
+    }
 }
 

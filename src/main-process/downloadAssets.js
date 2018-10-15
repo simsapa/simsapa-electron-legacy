@@ -51,7 +51,7 @@ function doDownload(event) {
         var processAsset = function(opts) {
             return new Promise((resolve, reject) => {
                 downloadAssetTarball(opts)
-                    .then(() => { resolve(md5CheckTar(opts)); })
+                    .then(() => { return md5CheckTar(opts); })
                     .then(() => { resolve(extractAsset(opts)); })
                     .catch((err) => {
                         console.log(err);
