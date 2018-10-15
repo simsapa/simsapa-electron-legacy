@@ -10,6 +10,8 @@ const express_app = express();
 
 const sequelize_module = require("sequelize");
 
+const version = require("./version");
+
 export function create(mainWindow, dbPath) {
 
     mainWindow = new BrowserWindow({
@@ -279,6 +281,26 @@ LIMIT 20;
                         console.log("There was an error querying fts_translated_texts", JSON.stringify(err));
                         return res.send(err);
                     });
+            });
+    });
+
+    express_app.get("/local-version", (req, res) => {
+        let result = {};
+
+        if (version.localVersion !== null) {
+            result = version.localVersion;
+        }
+
+        return res.send(result);
+    });
+
+    express_app.get("/remote-version", (req, res) => {
+        version.saveRemoteVersion()
+            .then((data) => {
+                return res.send(data);
+            })
+            .catch((err) => {
+                return res.send({});
             });
     });
 
