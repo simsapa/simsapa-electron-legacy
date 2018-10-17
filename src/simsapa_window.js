@@ -1,5 +1,6 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 
+const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
@@ -304,6 +305,12 @@ LIMIT 20;
             });
     });
 
+    express_app.get("/restart-force-update", (req, res) => {
+        fs.writeFileSync(path.join(__dirname, "force-update.json"), "");
+        app.relaunch();
+        app.quit();
+    });
+
     express_app.listen(3030, () => {
         console.log('Server is up on port 3030');
     });
@@ -316,9 +323,6 @@ LIMIT 20;
         slashes: true
     }));
 
-    // This doesn't show up in production builds anyway.
-    //mainWindow.setMenuBarVisibility(true);
-
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
         // Dereference the window object, usually you would store windows
@@ -327,9 +331,6 @@ LIMIT 20;
         mainWindow = null;
     });
 };
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
 
 // https://www.sqlite.org/fts5.html#full_text_query_syntax
 // https://stackoverflow.com/questions/28971633/how-to-escape-string-for-sqlite-fts-query

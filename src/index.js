@@ -8,7 +8,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 let mainWindow;
 let assetsReady = false;
 
-const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 
 const dbPath = path.join(__dirname, "appdata.sqlite3");
@@ -18,8 +18,23 @@ const indexPath = path.join(assetsPath, "index-desktop.html");
 const simsapa_window = require('./simsapa_window');
 const download_window = require('./download_window');
 
+// If this is a force update start, remote already downloaded assets
+if (fse.existsSync(path.join(__dirname, "force-update.json"))) {
+
+    fse.removeSync(path.join(__dirname, "force-update.json"));
+
+    if (fse.existsSync(dbPath)) {
+        fse.removeSync(dbPath);
+    }
+
+    if (fse.existsSync(assetsPath)) {
+        fse.removeSync(assetsPath);
+    }
+
+}
+
 // If assets exist
-if (fs.existsSync(dbPath) && fs.existsSync(indexPath)) {
+if (fse.existsSync(dbPath) && fse.existsSync(indexPath)) {
 
     // Then open a window using the local assets.
     // Will check for available updates from there.
