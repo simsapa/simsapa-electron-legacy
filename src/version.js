@@ -4,7 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const rp = require('request-promise');
 
-const remoteVersionUrl = "http://ssp.a-buddha-ujja.org/version.json";
+let remoteVersionUrl;
+
+if (process.env.SIMSAPA_ENV == "development") {
+    remoteVersionUrl = "https://cutt.ly/simsapa-version-json-dev";
+} else {
+    remoteVersionUrl = "https://cutt.ly/simsapa-version-json-prod";
+}
+
 const localVersionPath = path.join(__dirname, "local-version.json");
 const remoteVersionPath = path.join(__dirname, "remote-version.json");
 
@@ -24,6 +31,11 @@ export function saveRemoteVersion() {
             .then((data) => {
                 remoteVersion = JSON.parse(data);
                 fs.writeFileSync(remoteVersionPath, data);
+
+                if (!fs.existsSync(localVersionPath)) {
+                    fs.writeFileSync(localVersionPath, data);
+                    localVersion = remoteVersion;
+                }
                 resolve(remoteVersion);
             })
             .catch((err) => {

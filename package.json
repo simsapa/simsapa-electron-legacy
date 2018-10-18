@@ -5,7 +5,7 @@
     "description": "Read the suttas and other Dhamma texts. Includes Pali - English dictionaries.",
     "main": "src/index.js",
     "scripts": {
-        "start": "electron-forge start",
+        "start": "SIMSAPA_ENV=development electron-forge start",
         "package": "electron-forge package",
         "make": "electron-forge make",
         "publish": "electron-forge publish",
