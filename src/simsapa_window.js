@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, shell, BrowserWindow } from 'electron';
 
 const fs = require('fs');
 const path = require('path');
@@ -6,6 +6,7 @@ const url = require('url');
 
 const express = require('express');
 const body_parser = require('body-parser');
+const opn = require('opn');
 
 const express_app = express();
 
@@ -322,6 +323,17 @@ LIMIT 20;
         pathname: "/index-desktop.html",
         slashes: true
     }));
+
+    // 'new-window' is fired when external links are clicked, when they use target="_blank"
+    mainWindow.webContents.on('new-window', function(e, url) {
+        e.preventDefault();
+
+        // this opens a new tab but in the backgroun, doesn't change the window focus
+        //shell.openExternal(url);
+
+        // this brings the browser window into focus
+        opn(url);
+    });
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
