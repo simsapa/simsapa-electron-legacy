@@ -26,7 +26,7 @@
                     "squirrel"
                 ],
                 "darwin": [
-                    "zip"
+                    "dmg"
                 ],
                 "linux": [
                     "deb"
@@ -58,7 +58,7 @@
                 "maintainer": "Gambhiro Bhikkhu <gambhiro.bhikkhu.85@gmail.com>"
             },
             "electronInstallerDMG": {
-                "name": "SimsapaDhammaReader",
+                "name": "Simsapa Dhamma Reader",
                 "title": "Simsapa Dhamma Reader",
                 "icon": "./src/icons/logo-letter-w1024.icns",
                 "background-color": "#f2f2f2"
