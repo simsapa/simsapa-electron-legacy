@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <title>Siṃsapā Dhamma Reader</title>
+
+        <link rel="stylesheet" href="./stylesheets/main.css">
+    </head>
+    <body>
+        <section class="hero is-primary is-fullheight">
+            <div class="hero-head">
+            </div>
+
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <figure class="image is-96x96">
+                        <img src="./images/logo-letter-w128.png">
+                    </figure>
+
+                    <h1 class="title">Siṃsapā Dhamma Reader</h1>
+                    <h2 class="subtitle">Download Assets</h2>
+
+                    <p>Click the button to download the latest version of the texts database and other asset files.</p>
+                    <p>The application will notify you when further updates become available for download.</p>
+
+                    <div class="level">
+                        <div class="level-item button-wrap">
+                            <button id="download" class="button is-info">Download</button>
+                        </div>
+                    </div>
+
+                    <div id="status-wrap" class="info-wrap"></div>
+                    <div id="database-wrap" class="info-wrap"></div>
+                    <div id="assets-wrap" class="info-wrap"></div>
+
+                </div>
+            </div>
+
+            <div class="hero-foot">
+                <div id="restart-wrap"></div>
+            </div>
+        </section>
+
+        <script>
+         require('../renderer-process/downloadAssets.js')
+        </script>
+    </body>
+</html>

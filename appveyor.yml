@@ -1,4 +1,4 @@
-version: "0.1.0.{branch}.{build}"
+version: "0.0.1.{branch}.{build}"
 
 skip_non_tags: true
 
@@ -39,7 +39,6 @@ test_script:
   - echo "Skipping test step."
 
 after_test:
-  - npm run fetch-assets
   - npm run make
 
 artifacts:

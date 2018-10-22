@@ -5,15 +5,17 @@ TAGS
 *.log
 **/auto/
 
-# local database
-development.sqlite3
-production.sqlite3
-CHECKSUMS.md5
+src/local-version.json
+src/remote-version.json
+src/force-update.json
 
-# elm
-gui-src/elm/repl-temp-*
-gui-src/elm/elm-stuff/
-gui-src/elm/node_modules/
+# local static assets
+# no trailing slash to match symlink too
+src/static
+*.tar.bz2
+
+# local database
+appdata.sqlite3
 
 # electron
 node_modules/

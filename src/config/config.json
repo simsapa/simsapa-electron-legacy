@@ -1,6 +1,6 @@
 {
   "development": {
-    "database": "development.sqlite3",
+    "database": "appdata.sqlite3",
     "dialect": "sqlite"
   },
   "test": {
@@ -8,7 +8,7 @@
     "dialect": "sqlite"
   },
   "production": {
-    "database": "production.sqlite3",
+    "database": "appdata.sqlite3",
     "dialect": "sqlite"
   }
 }
