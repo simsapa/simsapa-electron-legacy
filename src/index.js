@@ -11,35 +11,25 @@ let assetsReady = false;
 const fse = require('fs-extra');
 const path = require('path');
 
-const dbPath = path.join(__dirname, "appdata.sqlite3");
-const assetsPath = path.join(__dirname, "static");
-const indexPath = path.join(assetsPath, "index-desktop.html");
-
+const app_info = require('./app_info');
 const simsapa_window = require('./simsapa_window');
 const download_window = require('./download_window');
 
-// If this is a force update start, remote already downloaded assets
+// If this is a force update restart, open the asset download window
 if (fse.existsSync(path.join(__dirname, "force-update.json"))) {
 
     fse.removeSync(path.join(__dirname, "force-update.json"));
 
-    if (fse.existsSync(dbPath)) {
-        fse.removeSync(dbPath);
-    }
+    assetsReady = false;
+    app.on('ready', () => { download_window.create(mainWindow); });
 
-    if (fse.existsSync(assetsPath)) {
-        fse.removeSync(assetsPath);
-    }
-
-}
-
-// If assets exist
-if (fse.existsSync(dbPath) && fse.existsSync(indexPath)) {
+} else if (fse.existsSync(app_info.dbPath) && fse.existsSync(app_info.indexPath)) {
+    // Else if assets exist
 
     // Then open a window using the local assets.
     // Will check for available updates from there.
     assetsReady = true;
-    app.on('ready', () => { simsapa_window.create(mainWindow, dbPath); });
+    app.on('ready', () => { simsapa_window.create(mainWindow, app_info.dbPath); });
 
 } else {
 
@@ -64,7 +54,7 @@ app.on('activate', () => {
     // dock icon is clicked and there are no other windows open.
     if (mainWindow === null) {
         if (assetsReady) {
-            simsapa_window.create(mainWindow, dbPath);
+            simsapa_window.create(mainWindow, app_info.dbPath);
         } else {
             download_window.create(mainWindow);
         }

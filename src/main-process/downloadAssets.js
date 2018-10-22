@@ -1,6 +1,6 @@
 // downloadAssets.js: Main Process
 
-const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const request = require('request');
 const progress = require('request-progress');
@@ -9,6 +9,7 @@ const md5File = require('md5-file');
 
 const { app, ipcMain } = require('electron');
 
+const app_info = require('../app_info');
 const version = require('../version');
 
 let downloading = false;
@@ -35,18 +36,38 @@ function doDownload(event) {
         downloading = true;
         event.sender.send("status-clear");
 
-        var all_opts = [
-            {
+        let lv = version.localVersion;
+        let rv = version.remoteVersion;
+        let all_opts = [];
+
+        // TODO use semver-type version checking
+
+        if (lv.assets_tar.version != rv.assets_tar.version || ! fse.existsSync(app_info.indexPath)) {
+            // remove existing assets to make sure extracting over will not fail
+            if (fse.existsSync(app_info.assetsPath)) {
+                fse.removeSync(app_info.assetsPath);
+            }
+
+            let a = {
                 event: event,
                 msgId: 'assets',
-                assetVersion: version.remoteVersion.assets_tar,
-            },
-            {
+                assetVersion: rv.assets_tar,
+            };
+            all_opts.push(a);
+        }
+
+        if (lv.appdata_tar.version != rv.appdata_tar.version || ! fse.existsSync(app_info.dbPath)) {
+            if (fse.existsSync(app_info.dbPath)) {
+                fse.removeSync(app_info.dbPath);
+            }
+
+            let a = {
                 event: event,
                 msgId: 'database',
-                assetVersion: version.remoteVersion.appdata_tar,
-            },
-        ];
+                assetVersion: rv.appdata_tar,
+            };
+            all_opts.push(a);
+        }
 
         var processAsset = function(opts) {
             return new Promise((resolve, reject) => {
@@ -104,7 +125,7 @@ function downloadAssetTarball(opts) {
                 opts.event.sender.send(`${opts.msgId}-progress`, null);
                 resolve(true);
             })
-            .pipe(fs.createWriteStream(tarSavePath));
+            .pipe(fse.createWriteStream(tarSavePath));
     });
 }
 
@@ -146,7 +167,7 @@ function extractAsset(opts) {
         extract.on('end', () => {
             opts.event.sender.send(`${opts.msgId}-info`,  "Completed.");
 
-            fs.unlink(tarSavePath, (err) => {
+            fse.unlink(tarSavePath, (err) => {
                 if (err) throw err;
             });
 
