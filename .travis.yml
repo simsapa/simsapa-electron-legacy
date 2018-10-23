@@ -44,7 +44,6 @@ before_script:
   - yarn cache dir
 
 script:
-  - npm run fetch-assets
   - npm run make
 
 after_success:
