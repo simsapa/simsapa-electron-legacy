@@ -68,37 +68,144 @@ export function create(mainWindow, dbPath) {
     express_app.get("/search/dict_words", (req, res) => {
         const query = req.query.query;
 
-        let results = [];
+        let opts = {
+            word_starts_with: true,
+            word_contains: true,
+            contains_exactly: true,
+            fulltext: true,
+        };
 
-        sequelize_module.Promise.resolve(1)
+        if (req.query.word_starts_with === "false") {
+            opts.word_starts_with = false;
+        }
+        if (req.query.word_contains === "false") {
+            opts.word_contains = false;
+        }
+        if (req.query.contains_exactly === "false") {
+            opts.contains_exactly = false;
+        }
+        if (req.query.fulltext === "false") {
+            opts.fulltext = false;
+        }
+
+        let results = {
+            word_starts_with: [],
+            word_contains: [],
+            contains_exactly: [],
+            fulltext: [],
+            total_count: 0,
+        };
+
+        let actions = [];
 
         // word starts with
 
-            .then(() => {
-                const items_sql = `
+        if (opts.word_starts_with) {
+            const items_sql = `
 SELECT * FROM dict_words
-WHERE word LIKE :query;
+WHERE word LIKE :query
+ORDER BY word ASC;
 `;
 
-                return seq.query(items_sql, {
-                    replacements: {
-                        query: query + "%"
-                    },
-                    type: seq.QueryTypes.SELECT,
-                    model: db.DictWord
+            let p = seq.query(items_sql, {
+                replacements: {
+                    query: query + "%"
+                },
+                type: seq.QueryTypes.SELECT,
+                model: db.DictWord
+            })
+
+                .then((data) => {
+                    results
+                        .word_starts_with
+                        .push.apply(results
+                                    .word_starts_with,
+                                    data);
+
+                    results.total_count += data.length;
                 })
 
-                    .then((data) => results.push.apply(results, data))
+                .catch((err) => {
+                    console.log("There was an error querying dict_words", JSON.stringify(err));
+                    return res.send(err);
+                });
 
-                    .catch((err) => {
-                        console.log("There was an error querying dict_words", JSON.stringify(err));
-                        return res.send(err);
-                    });
+            actions.push(p);
+        }
+
+        // word contains
+
+        if (opts.word_contains) {
+            const items_sql = `
+SELECT * FROM dict_words
+WHERE word LIKE :query
+ORDER BY word ASC;
+`;
+
+            let p = seq.query(items_sql, {
+                replacements: {
+                    query: "%" + query + "%"
+                },
+                type: seq.QueryTypes.SELECT,
+                model: db.DictWord
             })
+
+                .then((data) => {
+                    results
+                        .word_contains
+                        .push.apply(results
+                                    .word_contains,
+                                    data);
+
+                    results.total_count += data.length;
+                })
+
+                .catch((err) => {
+                    console.log("There was an error querying dict_words", JSON.stringify(err));
+                    return res.send(err);
+                });
+
+            actions.push(p);
+        }
+
+        // contains exactly
+
+        if (opts.contains_exactly) {
+            const items_sql = `
+SELECT * FROM dict_words
+WHERE definition_plain LIKE :query
+ORDER BY word ASC;
+`;
+
+            let p = seq.query(items_sql, {
+                replacements: {
+                    query: "%" + query + "%"
+                },
+                type: seq.QueryTypes.SELECT,
+                model: db.DictWord
+            })
+
+                .then((data) => {
+                    results
+                        .contains_exactly
+                        .push.apply(results
+                                    .contains_exactly,
+                                    data);
+
+                    results.total_count += data.length;
+                })
+
+                .catch((err) => {
+                    console.log("There was an error querying dict_words", JSON.stringify(err));
+                    return res.send(err);
+                });
+
+            actions.push(p);
+        }
 
         // fulltext search
 
-            .then(() => {
+        if (opts.fulltext) {
                 const items_sql = `
 SELECT
     dict_words.id,
@@ -113,10 +220,10 @@ SELECT
 FROM fts_dict_words
 INNER JOIN dict_words ON dict_words.id = fts_dict_words.rowid
 WHERE fts_dict_words MATCH :query
-ORDER BY rank
-LIMIT 20;`;
+ORDER BY rank;
+`;
 
-                return seq.query(items_sql, {
+                let p = seq.query(items_sql, {
                     replacements: {
                         query: escape_string_for_fts(query) + "*"
                     },
@@ -125,59 +232,199 @@ LIMIT 20;`;
                 })
 
                     .then((data) => {
-                        results.push.apply(results, data);
+                        results
+                            .fulltext
+                            .push.apply(results
+                                        .fulltext,
+                                        data);
 
-                        return res.send(results);
+                        results.total_count += data.length;
                     })
 
                     .catch((err) => {
                         console.log("There was an error querying fts_dict_words", JSON.stringify(err));
                         return res.send(err);
                     });
+
+            actions.push(p);
+        }
+
+        Promise.all(actions)
+            .then(() => {
+                return res.send(results);
+            })
+            .catch((err) => {
+                res.send(err);
             });
+
     });
 
     express_app.get("/search/texts", (req, res) => {
         const query = req.query.query;
 
-        let results = {
-            root_texts: [],
-            translated_texts: []
+        let opts = {
+            root_texts: true,
+            translated_texts: true,
+            acronym_contains: true,
+            title_contains: true,
+            fulltext: true,
+            contains_exactly: true,
         };
 
-        sequelize_module.Promise.resolve(1)
+        if (req.query.root_texts === "false") {
+            opts.root_texts = false;
+        }
+        if (req.query.translated_texts === "false") {
+            opts.translated_texts = false;
+        }
+        if (req.query.acronym_contains === "false") {
+            opts.acronym_contains = false;
+        }
+        if (req.query.title_contains === "false") {
+            opts.title_contains = false;
+        }
+        if (req.query.fulltext === "false") {
+            opts.fulltext = false;
+        }
+        if (req.query.contains_exactly === "false") {
+            opts.contains_exactly = false;
+        }
 
-        // root_texts.acronym starts with
-        // root_text.title contains
+        let results = {
+            root_texts: {
+                acronym_contains: [],
+                title_contains: [],
+                contains_exactly: [],
+                fulltext: [],
+                total_count: 0,
+            },
+            translated_texts: {
+                acronym_contains: [],
+                title_contains: [],
+                contains_exactly: [],
+                fulltext: [],
+                total_count: 0,
+            },
+        };
 
-            .then(() => {
+        let actions = [];
+
+        if (opts.root_texts) {
+
+            // root_texts.acronym contains
+
+            if (opts.acronym_contains) {
                 const items_sql = `
 SELECT root_texts.*
 FROM root_texts
-WHERE acronym LIKE :q_acronym OR title LIKE :q_title
-ORDER BY acronym ASC
-LIMIT 20;
+WHERE acronym LIKE :q_acronym
+ORDER BY acronym ASC;
 `;
-                seq.query(items_sql, {
+                let p = seq.query(items_sql, {
                     replacements: {
-                        q_acronym: query + "%",
-                        q_title: "%" + query + "%"
+                        q_acronym: "%" + query + "%",
                     },
                     type: seq.QueryTypes.SELECT,
                     model: db.RootText
                 })
 
-                    .then((data) => results.root_texts.push.apply(results.root_texts, data))
+                    .then((data) => {
+                        results
+                            .root_texts
+                            .acronym_contains
+                            .push.apply(results
+                                        .root_texts
+                                        .acronym_contains,
+                                        data);
+
+                        results.root_texts.total_count += data.length;
+                    })
 
                     .catch((err) => {
                         console.log("There was an error querying root_texts", JSON.stringify(err));
                         return res.send(err);
                     });
-            })
 
-        // fts_root_texts.content_plain contains
+                actions.push(p);
+            }
 
-            .then(() => {
+            // root_text.title contains
+
+            if (opts.title_contains) {
+                const items_sql = `
+SELECT root_texts.*
+FROM root_texts
+WHERE title LIKE :q_title
+ORDER BY title ASC;
+`;
+                let p = seq.query(items_sql, {
+                    replacements: {
+                        q_title: "%" + query + "%",
+                    },
+                    type: seq.QueryTypes.SELECT,
+                    model: db.RootText
+                })
+
+                    .then((data) => {
+                        results
+                            .root_texts
+                            .title_contains
+                            .push.apply(results
+                                        .root_texts
+                                        .title_contains,
+                                        data);
+
+                        results.root_texts.total_count += data.length;
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying root_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
+
+                actions.push(p);
+            }
+
+            // fts_root_texts.content_plain contains exactly
+
+            if (opts.contains_exactly) {
+                const items_sql = `
+SELECT root_texts.*
+FROM root_texts
+WHERE content_plain LIKE :search_content
+ORDER BY title ASC;
+`;
+                let p = seq.query(items_sql, {
+                    replacements: {
+                        search_content: "%" + query + "%",
+                    },
+                    type: seq.QueryTypes.SELECT,
+                    model: db.RootText
+                })
+
+                    .then((data) => {
+                        results
+                            .root_texts
+                            .contains_exactly
+                            .push.apply(results
+                                        .root_texts
+                                        .contains_exactly,
+                                        data);
+
+                        results.root_texts.total_count += data.length;
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying root_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
+
+                actions.push(p);
+            }
+
+            // fts_root_texts.content_plain fulltext
+
+            if (opts.fulltext) {
                 const items_sql = `
 SELECT
     root_texts.id,
@@ -192,11 +439,10 @@ SELECT
 FROM fts_root_texts
 INNER JOIN root_texts ON root_texts.id = fts_root_texts.rowid
 WHERE fts_root_texts MATCH :search_content
-ORDER BY rank
-LIMIT 20;
+ORDER BY rank;
 `;
 
-                return seq.query(items_sql, {
+                let p = seq.query(items_sql, {
                     replacements: {
                         search_content: escape_string_for_fts(query) + "*"
                     },
@@ -204,48 +450,147 @@ LIMIT 20;
                     model: db.RootText
                 })
 
-                    .then((data) => results.root_texts.push.apply(results.root_texts, data))
+                    .then((data) => {
+                        results
+                            .root_texts
+                            .fulltext
+                            .push.apply(results
+                                        .root_texts
+                                        .fulltext,
+                                        data);
+
+                        results.root_texts.total_count += data.length;
+                    })
 
                     .catch((err) => {
                         console.log("There was an error querying fts_root_texts", JSON.stringify(err));
                         return res.send(err);
                     });
-            })
 
-        // translated_texts.acronym
-        // translated_text.title
+                actions.push(p);
+            }
 
-            .then(() => {
+        }
+
+        if (opts.translated_texts) {
+
+            // translated_texts.acronym contains
+
+            if (opts.acronym_contains) {
                 const items_sql = `
 SELECT translated_texts.*
 FROM translated_texts
-WHERE acronym LIKE :q_acronym OR title LIKE :q_title
-ORDER BY acronym ASC
-LIMIT 20;
+WHERE acronym LIKE :q_acronym
+ORDER BY acronym ASC;
 `;
 
-                return seq.query(items_sql, {
+                let p = seq.query(items_sql, {
                     replacements: {
-                        q_acronym: query + "%",
+                        q_acronym: "%" + query + "%",
+                    },
+                    type: seq.QueryTypes.SELECT,
+                    model: db.TranslatedText
+                })
+
+                    .then((data) => {
+                        results
+                            .translated_texts
+                            .acronym_contains
+                            .push.apply(results
+                                        .translated_texts
+                                        .acronym_contains,
+                                        data);
+
+                        results.translated_texts.total_count += data.length;
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying translated_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
+
+                actions.push(p);
+            }
+
+            // translated_text.title contains
+
+            if (opts.title_contains) {
+                const items_sql = `
+SELECT translated_texts.*
+FROM translated_texts
+WHERE title LIKE :q_title
+ORDER BY title ASC;
+`;
+
+                let p = seq.query(items_sql, {
+                    replacements: {
                         q_title: "%" + query + "%"
                     },
                     type: seq.QueryTypes.SELECT,
                     model: db.TranslatedText
                 })
 
-                    .then((data) => results.translated_texts.push.apply(results.translated_texts, data))
+                    .then((data) => {
+                        results
+                            .translated_texts
+                            .title_contains
+                            .push.apply(results
+                                        .translated_texts
+                                        .title_contains,
+                                        data);
+
+                        results.translated_texts.total_count += data.length;
+                    })
 
                     .catch((err) => {
                         console.log("There was an error querying translated_texts", JSON.stringify(err));
                         return res.send(err);
                     });
-            })
 
-        // fts_translated_texts.content_plain
+                actions.push(p);
+            }
 
-        // return results
+            // translated_text.content_plain contains exactly
 
-            .then(() => {
+            if (opts.contains_exactly) {
+                const items_sql = `
+SELECT translated_texts.*
+FROM translated_texts
+WHERE content_plain LIKE :search_content
+ORDER BY title ASC;
+`;
+
+                let p = seq.query(items_sql, {
+                    replacements: {
+                        search_content: "%" + query + "%"
+                    },
+                    type: seq.QueryTypes.SELECT,
+                    model: db.TranslatedText
+                })
+
+                    .then((data) => {
+                        results
+                            .translated_texts
+                            .contains_exactly
+                            .push.apply(results
+                                        .translated_texts
+                                        .contains_exactly,
+                                        data);
+
+                        results.translated_texts.total_count += data.length;
+                    })
+
+                    .catch((err) => {
+                        console.log("There was an error querying translated_texts", JSON.stringify(err));
+                        return res.send(err);
+                    });
+
+                actions.push(p);
+            }
+
+            // fts_translated_texts.content_plain fulltext
+
+            if (opts.fulltext) {
                 const items_sql = `
 SELECT
     translated_texts.id,
@@ -261,11 +606,10 @@ SELECT
 FROM fts_translated_texts
 INNER JOIN translated_texts ON translated_texts.id = fts_translated_texts.rowid
 WHERE fts_translated_texts MATCH :search_content
-ORDER BY rank
-LIMIT 20;
+ORDER BY rank;
 `;
 
-                return seq.query(items_sql, {
+                let p = seq.query(items_sql, {
                     replacements: {
                         search_content: escape_string_for_fts(query) + "*"
                     },
@@ -274,16 +618,35 @@ LIMIT 20;
                 })
 
                     .then((data) => {
-                        results.translated_texts.push.apply(results.translated_texts, data);
+                        results
+                            .translated_texts
+                            .fulltext
+                            .push.apply(results
+                                        .translated_texts
+                                        .fulltext,
+                                        data);
 
-                        return res.send(results);
+                        results.translated_texts.total_count += data.length;
                     })
 
                     .catch((err) => {
                         console.log("There was an error querying fts_translated_texts", JSON.stringify(err));
                         return res.send(err);
                     });
+
+                actions.push(p);
+            }
+
+        }
+
+        Promise.all(actions)
+            .then(() => {
+                return res.send(results);
+            })
+            .catch((err) => {
+                res.send(err);
             });
+
     });
 
     express_app.get("/local-version", (req, res) => {
