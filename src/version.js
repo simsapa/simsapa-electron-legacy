@@ -1,5 +1,7 @@
 // App and data version checking utilities
 
+const app_info = require('./app_info');
+
 const process = require('process');
 const fs = require('fs');
 const path = require('path');
@@ -13,8 +15,8 @@ if (process.env.SIMSAPA_ENV == "development") {
     remoteVersionUrl = "https://cutt.ly/simsapa-version-json-prod";
 }
 
-const localVersionPath = path.join(__dirname, "local-version.json");
-const remoteVersionPath = path.join(__dirname, "remote-version.json");
+const localVersionPath = path.join(app_info.simsapaAppDataPath, "local-version.json");
+const remoteVersionPath = path.join(app_info.simsapaAppDataPath, "remote-version.json");
 
 export let connectionError;
 export let localVersion;

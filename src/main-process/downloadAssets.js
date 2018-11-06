@@ -109,7 +109,7 @@ function showConnectionError(event, err) {
 
 function downloadAssetTarball(opts) {
     return new Promise((resolve, reject) => {
-        let tarSavePath = path.join(__dirname, "..", opts.assetVersion.saveAs);
+        let tarSavePath = path.join(app_info.simsapaAppDataPath, opts.assetVersion.saveAs);
 
         progress(request(opts.assetVersion.url))
             .on('progress', (state) => {
@@ -131,7 +131,7 @@ function downloadAssetTarball(opts) {
 
 function md5CheckTar(opts) {
     return new Promise((resolve, reject) => {
-        let tarSavePath = path.join(__dirname, "..", opts.assetVersion.saveAs);
+        let tarSavePath = path.join(app_info.simsapaAppDataPath, opts.assetVersion.saveAs);
 
         md5File(tarSavePath, (err, hash) => {
             if (err) {
@@ -152,8 +152,8 @@ function md5CheckTar(opts) {
 
 function extractAsset(opts) {
     return new Promise((resolve, reject) => {
-        let tarSavePath = path.join(__dirname, "..", opts.assetVersion.saveAs);
-        let extractDir = path.join(__dirname, "..");
+        let tarSavePath = path.join(app_info.simsapaAppDataPath, opts.assetVersion.saveAs);
+        let extractDir = path.join(app_info.simsapaAppDataPath);
 
         opts.event.sender.send(`${opts.msgId}-info`, `Extracting ${opts.assetVersion.saveAs} ...`);
 
