@@ -12,6 +12,7 @@ const express_app = express();
 
 const sequelize_module = require("sequelize");
 
+const app_info = require('./app_info');
 const version = require("./version");
 
 export function create(mainWindow, dbPath) {
@@ -19,7 +20,7 @@ export function create(mainWindow, dbPath) {
     mainWindow = new BrowserWindow({
         width: 1920,
         height: 1080,
-        icon: path.join(__dirname, "static", "assets", "icons", "logo-letter-w64.png")
+        icon: path.join(app_info.simsapaSrcPath, "icons", "logo-letter-w64.png")
     });
 
     const seq = new sequelize_module({
@@ -45,7 +46,7 @@ export function create(mainWindow, dbPath) {
     const Op = sequelize_module.Op;
 
     express_app.use(body_parser.json());
-    express_app.use(express.static(path.join(__dirname, 'static')));
+    express_app.use(express.static(path.join(app_info.simsapaAppDataPath, 'static')));
 
     express_app.get("/authors/:uid", (req, res) => {
         const author_uid = req.params.uid;
@@ -670,7 +671,7 @@ ORDER BY rank;
     });
 
     express_app.get("/restart-force-update", (req, res) => {
-        fs.writeFileSync(path.join(__dirname, "force-update.json"), "");
+        fs.writeFileSync(path.join(app_info.simsapaAppDataPath, "force-update.json"), "");
         app.relaunch();
         app.quit();
     });

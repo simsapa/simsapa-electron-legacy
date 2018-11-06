@@ -15,10 +15,13 @@ const app_info = require('./app_info');
 const simsapa_window = require('./simsapa_window');
 const download_window = require('./download_window');
 
-// If this is a force update restart, open the asset download window
-if (fse.existsSync(path.join(__dirname, "force-update.json"))) {
+// Make sure local appData folder exists
+fse.ensureDirSync(app_info.simsapaAppDataPath);
 
-    fse.removeSync(path.join(__dirname, "force-update.json"));
+// If this is a force update restart, open the asset download window
+if (fse.existsSync(path.join(app_info.simsapaAppDataPath, "force-update.json"))) {
+
+    fse.removeSync(path.join(app_info.simsapaAppDataPath, "force-update.json"));
 
     assetsReady = false;
     app.on('ready', () => { download_window.create(mainWindow); });
